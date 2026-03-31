@@ -49,7 +49,7 @@ ScanHexa/
 ⚙️ Installation
 
 1️⃣ Clone Repository
-git clone https://github.com/your-username/scan-hexa.git
+git clone https://github.com/Tanisha-2005/ScanHexa
 cd scan-hexa
 
 2️⃣ Install Dependencies
