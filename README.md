@@ -74,3 +74,8 @@ Supports controlled and modular scanning
 ⚠️ Disclaimer
 This tool is intended strictly for educational and authorized security testing purposes.
 Unauthorized use against systems without permission is illegal.
+
+🌐 Live Demo
+🚀 Access the deployed project here:  
+👉 https://scanhexa.onrender.com
+> Experience ScanHexa directly in your browser without any setup.
