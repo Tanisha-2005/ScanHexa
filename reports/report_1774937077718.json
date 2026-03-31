@@ -1,0 +1,79 @@
+{
+  "success": true,
+  "target": "192.168.1.1",
+  "id": "1774937077718",
+  "data": {
+    "nmap": {
+      "hostUp": true,
+      "openPorts": [
+        {
+          "port": "80",
+          "protocol": "tcp",
+          "state": "open",
+          "service": "http"
+        },
+        {
+          "port": "443",
+          "protocol": "tcp",
+          "state": "open",
+          "service": "https"
+        },
+        {
+          "port": "22",
+          "protocol": "tcp",
+          "state": "open",
+          "service": "ssh"
+        },
+        {
+          "port": "3306",
+          "protocol": "tcp",
+          "state": "closed",
+          "service": "mysql"
+        }
+      ],
+      "rawOutput": "Starting Nmap 7.93 ( https://nmap.org )\nNmap scan report for 192.168.1.1\nHost is up (0.01s latency).\n\nPORT     STATE  SERVICE\n22/tcp   open   ssh\n80/tcp   open   http\n443/tcp  open   https\n3306/tcp closed mysql\n\nNmap done: 1 IP address (1 host up) scanned in 1.52 seconds"
+    },
+    "nikto": {
+      "vulnerabilities": [
+        "Server: Apache/2.4.41 (Ubuntu)",
+        "The anti-clickjacking X-Frame-Options header is not present.",
+        "The X-XSS-Protection header is not defined. This header can hint to the user agent to protect against some forms of XSS",
+        "The site uses SSL and the Strict-Transport-Security HTTP header is not defined.",
+        "No CGI Directories found (use '-C all' to force check all possible dirs)"
+      ],
+      "rawOutput": "- Nikto v2.1.6\n---------------------------------------------------------------------------\n+ Target IP:          ... \n+ Target Hostname:    192.168.1.1\n+ Target Port:        443\n+ Server: Apache/2.4.41 (Ubuntu)\n+ The anti-clickjacking X-Frame-Options header is not present.\n+ The X-XSS-Protection header is not defined..."
+    },
+    "sqlmap": {
+      "error": "Simulation not configured for sqlmap"
+    },
+    "openvas": {
+      "error": "Simulation not configured for openvas"
+    },
+    "grim": {
+      "error": "Simulation not configured for grim"
+    },
+    "theharvester": {
+      "data": "[+] Emails found:\nadmin@192.168.1.1\ninfo@192.168.1.1\n[+] Hosts found:\nwww.192.168.1.1:192.168.1.100\napi.192.168.1.1:192.168.1.101",
+      "rawOutput": "*******************************************************************\n*  TheHarvester 4.3.0                                             *\n*  Coded by Christian Martorella                                  *\n*******************************************************************\n\n[*] Target: 192.168.1.1\n\n[+] Searching Google...\n[+] Emails found:\nadmin@192.168.1.1\ninfo@192.168.1.1\n\n[+] Hosts found:\nwww.192.168.1.1:192.168.1.100\napi.192.168.1.1:192.168.1.101"
+    },
+    "whois": {
+      "data": "\r\nWhois v1.21 - Domain information lookup\r\nCopyright (C) 2005-2019 Mark Russinovich\r\nSysinternals - www.sysinternals.com\r\n\r\n",
+      "rawOutput": "\r\nWhois v1.21 - Domain information lookup\r\nCopyright (C) 2005-2019 Mark Russinovich\r\nSysinternals - www.sysinternals.com\r\n\r\n"
+    },
+    "dns": {
+      "nslookup": "Server:\t\t8.8.8.8\nAddress:\t8.8.8.8#53\n\nNon-authoritative answer:\nName:\t192.168.1.1\nAddress: 192.168.1.100",
+      "rawOutput": "Server:\t\t8.8.8.8\nAddress:\t8.8.8.8#53\n\nNon-authoritative answer:\nName:\t192.168.1.1\nAddress: 192.168.1.100"
+    },
+    "ssl": {
+      "error": "Simulation not configured for ssl"
+    },
+    "headers": {
+      "error": "Simulation not configured for headers"
+    }
+  },
+  "riskAssessment": {
+    "level": "critical",
+    "score": 89
+  },
+  "timestamp": "2026-03-31T06:04:37.718Z"
+}

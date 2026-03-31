@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScanHexa </title>
+    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Animated Background -->
+    <div class="bg-grid"></div>
+    <div class="bg-particles" id="particles"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="hex-logo">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <span class="brand-name">SCAN<span class="brand-hexa">HEXA</span></span>
+        </div>
+        <div class="nav-links">
+            <a href="#dashboard" class="nav-link active" onclick="showSection('dashboard')">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <a href="#scanner" class="nav-link" onclick="showSection('scanner')">
+                <i class="fas fa-radar"></i> Scanner
+            </a>
+            <a href="#reports" class="nav-link" onclick="showSection('reports')">
+                <i class="fas fa-file-alt"></i> Reports
+            </a>
+            <a href="#tools" class="nav-link" onclick="showSection('tools')">
+                <i class="fas fa-tools"></i> Tools
+            </a>
+            <a href="#about" class="nav-link" onclick="showSection('about')">
+                <i class="fas fa-info-circle"></i> About
+            </a>
+        </div>
+        <div class="nav-status">
+            <span class="status-dot online"></span>
+            <span class="status-text">SYSTEM ONLINE</span>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="main-container">
+
+        <!-- =================== DASHBOARD SECTION =================== -->
+        <section id="dashboard" class="section active">
+            <div class="section-header">
+                <h1 class="section-title"><i class="fas fa-tachometer-alt"></i> Security Dashboard</h1>
+                <p class="section-subtitle">Real-time reconnaissance & vulnerability intelligence hub</p>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card" id="stat-total">
+                    <div class="stat-icon"><i class="fas fa-crosshairs"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="total-scans">0</span>
+                        <span class="stat-label">Total Scans</span>
+                    </div>
+                    <div class="stat-glow"></div>
+                </div>
+                <div class="stat-card critical" id="stat-critical">
+                    <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="critical-vulns">0</span>
+                        <span class="stat-label">Critical Vulns</span>
+                    </div>
+                    <div class="stat-glow"></div>
+                </div>
+                <div class="stat-card warning" id="stat-warning">
+                    <div class="stat-icon"><i class="fas fa-shield-virus"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="open-ports">0</span>
+                        <span class="stat-label">Open Ports Found</span>
+                    </div>
+                    <div class="stat-glow"></div>
+                </div>
+                <div class="stat-card success" id="stat-reports">
+                    <div class="stat-icon"><i class="fas fa-file-medical"></i></div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="reports-count">0</span>
+                        <span class="stat-label">Reports Generated</span>
+                    </div>
+                    <div class="stat-glow"></div>
+                </div>
+            </div>
+
+            <!-- Quick Scan Panel -->
+            <div class="quick-scan-panel">
+                <div class="panel-header">
+                    <h2><i class="fas fa-bolt"></i> Quick Scan</h2>
+                    <span class="panel-badge">FAST RECON</span>
+                </div>
+                <div class="quick-scan-form">
+                    <div class="input-group">
+                        <i class="fas fa-crosshairs input-icon"></i>
+                        <input type="text" id="quick-target" class="cyber-input" placeholder="Enter IP Address or Domain (e.g., 192.168.1.1 or example.com)">
+                        <button class="cyber-btn primary" onclick="quickScan()">
+                            <i class="fas fa-search"></i> SCAN NOW
+                        </button>
+                    </div>
+                    <div class="quick-options">
+                        <label class="cyber-check">
+                            <input type="checkbox" id="q-nmap" checked>
+                            <span class="checkmark"></span> Nmap
+                        </label>
+                        <label class="cyber-check">
+                            <input type="checkbox" id="q-nikto" checked>
+                            <span class="checkmark"></span> Nikto
+                        </label>
+                        <label class="cyber-check">
+                            <input type="checkbox" id="q-whois" checked>
+                            <span class="checkmark"></span> WHOIS
+                        </label>
+                        <label class="cyber-check">
+                            <input type="checkbox" id="q-dns" checked>
+                            <span class="checkmark"></span> DNS
+                        </label>
+                        <label class="cyber-check">
+                            <input type="checkbox" id="q-harvest">
+                            <span class="checkmark"></span> theHarvester
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Scans & Activity -->
+            <div class="dashboard-grid">
+                <div class="panel recent-scans">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-history"></i> Recent Scans</h2>
+                        <button class="btn-clear" onclick="clearHistory()"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <div id="recent-scans-list" class="scan-list">
+                        <div class="empty-state">
+                            <i class="fas fa-search"></i>
+                            <p>No scans yet. Start your first scan!</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel live-terminal">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-terminal"></i> Live Terminal</h2>
+                        <div class="terminal-controls">
+                            <span class="tc-dot red"></span>
+                            <span class="tc-dot yellow"></span>
+                            <span class="tc-dot green"></span>
+                        </div>
+                    </div>
+                    <div id="terminal-output" class="terminal-body">
+                        <div class="terminal-line">
+                            <span class="t-prompt">scanhexa@cyber:~$</span>
+                            <span class="t-text typing"> System initialized. Ready for reconnaissance...</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="t-prompt">scanhexa@cyber:~$</span>
+                            <span class="t-text"> Loading security modules... <span class="t-ok">[OK]</span></span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="t-prompt">scanhexa@cyber:~$</span>
+                            <span class="t-text"> Nmap engine ready <span class="t-ok">[OK]</span></span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="t-prompt">scanhexa@cyber:~$</span>
+                            <span class="t-text"> Nikto scanner ready <span class="t-ok">[OK]</span></span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="t-prompt">scanhexa@cyber:~$</span>
+                            <span class="t-text"> OSINT tools loaded <span class="t-ok">[OK]</span></span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="t-prompt">scanhexa@cyber:~$</span>
+                            <span class="t-text blink"> _</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================== SCANNER SECTION =================== -->
+        <section id="scanner" class="section">
+            <div class="section-header">
+                <h1 class="section-title"><i class="fas fa-radar"></i> Advanced Scanner</h1>
+                <p class="section-subtitle">Multi-tool vulnerability scanning & deep reconnaissance</p>
+            </div>
+
+            <div class="scanner-layout">
+                <!-- Left: Configuration Panel -->
+                <div class="config-panel">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2><i class="fas fa-cogs"></i> Scan Configuration</h2>
+                        </div>
+                        <div class="config-body">
+                            <!-- Target Input -->
+                            <div class="config-section">
+                                <label class="config-label">
+                                    <i class="fas fa-crosshairs"></i> TARGET
+                                </label>
+                                <input type="text" id="scan-target" class="cyber-input full" placeholder="IP Address or Domain Name">
+                                <div class="target-info" id="target-info"></div>
+                            </div>
+
+                            <!-- Scan Type -->
+                            <div class="config-section">
+                                <label class="config-label">
+                                    <i class="fas fa-layer-group"></i> SCAN PROFILE
+                                </label>
+                                <select id="scan-profile" class="cyber-select">
+                                    <option value="quick">⚡ Quick Scan (Fast)</option>
+                                    <option value="standard" selected>🔍 Standard Scan</option>
+                                    <option value="deep">🔬 Deep Scan (Comprehensive)</option>
+                                    <option value="stealth">🕵️ Stealth Scan</option>
+                                    <option value="custom">⚙️ Custom Configuration</option>
+                                </select>
+                            </div>
+
+                            <!-- Tools Selection -->
+                            <div class="config-section">
+                                <label class="config-label">
+                                    <i class="fas fa-tools"></i> SELECT TOOLS
+                                </label>
+                                <div class="tool-checkboxes">
+                                    <div class="tool-option" data-tool="nmap">
+                                        <label class="cyber-check-box">
+                                            <input type="checkbox" name="tools" value="nmap" checked>
+                                            <span class="cb-box"></span>
+                                            <div class="cb-info">
+                                                <span class="cb-name"><i class="fas fa-network-wired"></i> Nmap</span>
+                                                <span class="cb-desc">Port & Service Scanner</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="tool-option" data-tool="nikto">
+                                        <label class="cyber-check-box">
+                                            <input type="checkbox" name="tools" value="nikto" checked>
+                                            <span class="cb-box"></span>
+                                            <div class="cb-info">
+                                                <span class="cb-name"><i class="fas fa-globe"></i> Nikto</span>
+                                                <span class="cb-desc">Web Vulnerability Scanner</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="tool-option" data-tool="sqlmap">
+                                        <label class="cyber-check-box">
+                                            <input type="checkbox" name="tools" value="sqlmap">
+                                            <span class="cb-box"></span>
+                                            <div class="cb-info">
+                                                <span class="cb-name"><i class="fas fa-database"></i> SQLMap</span>
+                                                <span class="cb-desc">SQL Injection Scanner</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="tool-option" data-tool="openvas">
+                                        <label class="cyber-check-box">
+                                            <input type="checkbox" name="tools" value="openvas">
+                                            <span class="cb-box"></span>
+                                            <div class="cb-info">
+                                                <span class="cb-name"><i class="fas fa-shield-alt"></i> OpenVAS</span>
+                                                <span class="cb-desc">Vulnerability Assessment</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="tool-option" data-tool="grim">
+                                        <label class="cyber-check-box">
+                                            <input type="checkbox" name="tools" value="grim">
+                                            <span class="cb-box"></span>
+                                            <div class="cb-info">
+                                                <span class="cb-name"><i class="fas fa-ghost"></i> Grim</span>
+                                                <span class="cb-desc">Social Recon Tool</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="tool-option" data-tool="theharvester">
+                                        <label class="cyber-check-box">
+                                            <input type="checkbox" name="tools" value="theharvester" checked>
+                                            <span class="cb-box"></span>
+                                            <div class="cb-info">
+                                                <span class="cb-name"><i class="fas fa-seedling"></i> theHarvester</span>
+                                                <span class="cb-desc">OSINT Email & DNS Recon</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="tool-option" data-tool="whois">
+                                        <label class="cyber-check-box">
+                                            <input type="checkbox" name="tools" value="whois" checked>
+                                            <span class="cb-box"></span>
+                                            <div class="cb-info">
+                                                <span class="cb-name"><i class="fas fa-id-card"></i> WHOIS</span>
+                                                <span class="cb-desc">Domain Registration Info</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="tool-option" data-tool="dns">
+                                        <label class="cyber-check-box">
+                                            <input type="checkbox" name="tools" value="dns" checked>
+                                            <span class="cb-box"></span>
+                                            <div class="cb-info">
+                                                <span class="cb-name"><i class="fas fa-sitemap"></i> DNS Recon</span>
+                                                <span class="cb-desc">DNS Enumeration & Records</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="tool-option" data-tool="ssl">
+                                        <label class="cyber-check-box">
+                                            <input type="checkbox" name="tools" value="ssl" checked>
+                                            <span class="cb-box"></span>
+                                            <div class="cb-info">
+                                                <span class="cb-name"><i class="fas fa-lock"></i> SSL/TLS</span>
+                                                <span class="cb-desc">Certificate Analysis</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="tool-option" data-tool="headers">
+                                        <label class="cyber-check-box">
+                                            <input type="checkbox" name="tools" value="headers" checked>
+                                            <span class="cb-box"></span>
+                                            <div class="cb-info">
+                                                <span class="cb-name"><i class="fas fa-code"></i> HTTP Headers</span>
+                                                <span class="cb-desc">Security Header Analysis</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Advanced Options -->
+                            <div class="config-section" id="advanced-section">
+                                <label class="config-label" onclick="toggleAdvanced()">
+                                    <i class="fas fa-sliders-h"></i> ADVANCED OPTIONS 
+                                    <i class="fas fa-chevron-down" id="adv-chevron"></i>
+                                </label>
+                                <div id="advanced-options" class="advanced-opts hidden">
+                                    <div class="adv-row">
+                                        <label>Port Range</label>
+                                        <input type="text" id="port-range" class="cyber-input sm" placeholder="1-65535" value="1-1000">
+                                    </div>
+                                    <div class="adv-row">
+                                        <label>Timeout (sec)</label>
+                                        <input type="number" id="timeout" class="cyber-input sm" value="60" min="10" max="300">
+                                    </div>
+                                    <div class="adv-row">
+                                        <label>OS Detection</label>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="os-detect">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="adv-row">
+                                        <label>Service Version</label>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="svc-version" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="adv-row">
+                                        <label>Aggressive Mode</label>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="aggressive">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Scan Buttons -->
+                            <div class="scan-actions">
+                                <button class="cyber-btn primary full" id="start-scan-btn" onclick="startScan()">
+                                    <i class="fas fa-play"></i> LAUNCH SCAN
+                                </button>
+                                <button class="cyber-btn danger full hidden" id="stop-scan-btn" onclick="stopScan()">
+                                    <i class="fas fa-stop"></i> ABORT SCAN
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Results Panel -->
+                <div class="results-panel">
+                    <!-- Progress Bar -->
+                    <div id="scan-progress" class="scan-progress hidden">
+                        <div class="progress-header">
+                            <span id="progress-tool-name"><i class="fas fa-cog fa-spin"></i> Initializing...</span>
+                            <span id="progress-percent">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill"></div>
+                        </div>
+                        <div class="progress-steps" id="progress-steps"></div>
+                    </div>
+
+                    <!-- Result Tabs -->
+                    <div class="result-tabs" id="result-tabs">
+                        <button class="rtab active" onclick="showResultTab('overview')">
+                            <i class="fas fa-eye"></i> Overview
+                        </button>
+                        <button class="rtab" onclick="showResultTab('nmap')">
+                            <i class="fas fa-network-wired"></i> Nmap
+                        </button>
+                        <button class="rtab" onclick="showResultTab('nikto')">
+                            <i class="fas fa-globe"></i> Nikto
+                        </button>
+                        <button class="rtab" onclick="showResultTab('sqlmap')">
+                            <i class="fas fa-database"></i> SQLMap
+                        </button>
+                        <button class="rtab" onclick="showResultTab('openvas')">
+                            <i class="fas fa-shield-alt"></i> OpenVAS
+                        </button>
+                        <button class="rtab" onclick="showResultTab('grim')">
+                            <i class="fas fa-ghost"></i> Grim
+                        </button>
+                        <button class="rtab" onclick="showResultTab('osint')">
+                            <i class="fas fa-search"></i> OSINT
+                        </button>
+                    </div>
+
+                    <!-- Result Content -->
+                    <div id="result-content" class="result-content">
+                        <div class="scan-placeholder" id="scan-placeholder">
+                            <div class="placeholder-icon">
+                                <i class="fas fa-radar"></i>
+                            </div>
+                            <h3>Ready to Scan</h3>
+                            <p>Configure your target and tools, then launch the scan to see results here</p>
+                        </div>
+
+                        <!-- Overview Tab -->
+                        <div id="tab-overview" class="result-tab hidden">
+                            <div class="overview-grid" id="overview-content"></div>
+                        </div>
+
+                        <!-- Tool Result Tabs -->
+                        <div id="tab-nmap" class="result-tab hidden">
+                            <div class="tool-result" id="nmap-result"></div>
+                        </div>
+                        <div id="tab-nikto" class="result-tab hidden">
+                            <div class="tool-result" id="nikto-result"></div>
+                        </div>
+                        <div id="tab-sqlmap" class="result-tab hidden">
+                            <div class="tool-result" id="sqlmap-result"></div>
+                        </div>
+                        <div id="tab-openvas" class="result-tab hidden">
+                            <div class="tool-result" id="openvas-result"></div>
+                        </div>
+                        <div id="tab-grim" class="result-tab hidden">
+                            <div class="tool-result" id="grim-result"></div>
+                        </div>
+                        <div id="tab-osint" class="result-tab hidden">
+                            <div class="tool-result" id="osint-result"></div>
+                        </div>
+                    </div>
+
+                    <!-- Report Generation -->
+                    <div id="report-actions" class="report-actions hidden">
+                        <button class="cyber-btn success" onclick="generateReport('pdf')">
+                            <i class="fas fa-file-pdf"></i> PDF Report
+                        </button>
+                        <button class="cyber-btn primary" onclick="generateReport('json')">
+                            <i class="fas fa-file-code"></i> JSON Export
+                        </button>
+                        <button class="cyber-btn warning" onclick="generateReport('html')">
+                            <i class="fas fa-file-alt"></i> HTML Report
+                        </button>
+                        <button class="cyber-btn secondary" onclick="shareReport()">
+                            <i class="fas fa-share-alt"></i> Share
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================== REPORTS SECTION =================== -->
+        <section id="reports" class="section">
+            <div class="section-header">
+                <h1 class="section-title"><i class="fas fa-file-alt"></i> Scan Reports</h1>
+                <p class="section-subtitle">Generated vulnerability assessment reports & findings</p>
+            </div>
+
+            <div class="reports-toolbar">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="report-search" placeholder="Search reports..." oninput="filterReports(this.value)">
+                </div>
+                <div class="toolbar-actions">
+                    <select id="report-filter" class="cyber-select sm" onchange="filterReportsByType()">
+                        <option value="all">All Reports</option>
+                        <option value="critical">Critical</option>
+                        <option value="high">High Risk</option>
+                        <option value="medium">Medium Risk</option>
+                        <option value="low">Low Risk</option>
+                    </select>
+                    <button class="cyber-btn primary sm" onclick="exportAllReports()">
+                        <i class="fas fa-download"></i> Export All
+                    </button>
+                </div>
+            </div>
+
+            <div id="reports-grid" class="reports-grid">
+                <div class="empty-state center">
+                    <i class="fas fa-folder-open"></i>
+                    <p>No reports generated yet. Run a scan to create reports.</p>
+                    <button class="cyber-btn primary" onclick="showSection('scanner')">
+                        <i class="fas fa-play"></i> Start Scanning
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================== TOOLS SECTION =================== -->
+        <section id="tools" class="section">
+            <div class="section-header">
+                <h1 class="section-title"><i class="fas fa-tools"></i> Security Tools</h1>
+                <p class="section-subtitle">Individual tool execution & detailed documentation</p>
+            </div>
+
+            <div class="tools-grid">
+                <!-- Nmap Tool Card -->
+                <div class="tool-card" data-tool="nmap">
+                    <div class="tool-card-header nmap">
+                        <i class="fas fa-network-wired"></i>
+                        <h3>Nmap</h3>
+                        <span class="tool-status active">ACTIVE</span>
+                    </div>
+                    <div class="tool-card-body">
+                        <p>Network Mapper - The industry standard for port scanning and network discovery. Detects open ports, services, OS fingerprinting.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">Port Scanning</span>
+                            <span class="feature-tag">OS Detection</span>
+                            <span class="feature-tag">Service Versioning</span>
+                            <span class="feature-tag">Script Engine</span>
+                        </div>
+                        <div class="tool-input-area">
+                            <input type="text" class="cyber-input full" id="nmap-target" placeholder="Target IP or Domain">
+                            <select class="cyber-select" id="nmap-type">
+                                <option value="basic">Basic Scan (-sV)</option>
+                                <option value="full">Full Scan (-sV -sC)</option>
+                                <option value="stealth">Stealth (-sS)</option>
+                                <option value="udp">UDP Scan (-sU)</option>
+                                <option value="vuln">Vuln Scripts (--script vuln)</option>
+                            </select>
+                            <button class="cyber-btn primary" onclick="runSingleTool('nmap')">
+                                <i class="fas fa-play"></i> Run Nmap
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nikto Tool Card -->
+                <div class="tool-card" data-tool="nikto">
+                    <div class="tool-card-header nikto">
+                        <i class="fas fa-globe"></i>
+                        <h3>Nikto</h3>
+                        <span class="tool-status active">ACTIVE</span>
+                    </div>
+                    <div class="tool-card-body">
+                        <p>Web server vulnerability scanner. Identifies dangerous files, outdated software, misconfigurations and known CVEs.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">Web Vulns</span>
+                            <span class="feature-tag">CVE Detection</span>
+                            <span class="feature-tag">Misconfig</span>
+                            <span class="feature-tag">SSL Checks</span>
+                        </div>
+                        <div class="tool-input-area">a
+                            <input type="text" class="cyber-input full" id="nikto-target" placeholder="http://target.com">
+                            <select class="cyber-select" id="nikto-type">
+                                <option value="basic">Basic Scan</option>
+                                <option value="ssl">SSL Check</option>
+                                <option value="cgi">CGI Check</option>
+                            </select>
+                            <button class="cyber-btn primary" onclick="runSingleTool('nikto')">
+                                <i class="fas fa-play"></i> Run Nikto
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SQLMap Tool Card -->
+                <div class="tool-card" data-tool="sqlmap">
+                    <div class="tool-card-header sqlmap">
+                        <i class="fas fa-database"></i>
+                        <h3>SQLMap</h3>
+                        <span class="tool-status active">ACTIVE</span>
+                    </div>
+                    <div class="tool-card-body">
+                        <p>Automated SQL injection detection and exploitation tool. Tests for various injection types including boolean, time-based, union.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">SQLi Detection</span>
+                            <span class="feature-tag">DB Enumeration</span>
+                            <span class="feature-tag">Blind SQLi</span>
+                            <span class="feature-tag">Time-Based</span>
+                        </div>
+                        <div class="tool-input-area">
+                            <input type="text" class="cyber-input full" id="sqlmap-target" placeholder="http://target.com/page?id=1">
+                            <select class="cyber-select" id="sqlmap-level">
+                                <option value="1">Level 1 (Basic)</option>
+                                <option value="2">Level 2 (Standard)</option>
+                                <option value="3">Level 3 (Deep)</option>
+                            </select>
+                            <button class="cyber-btn primary" onclick="runSingleTool('sqlmap')">
+                                <i class="fas fa-play"></i> Run SQLMap
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OpenVAS Tool Card -->
+                <div class="tool-card" data-tool="openvas">
+                    <div class="tool-card-header openvas">
+                        <i class="fas fa-shield-alt"></i>
+                        <h3>OpenVAS</h3>
+                        <span class="tool-status active">ACTIVE</span>
+                    </div>
+                    <div class="tool-card-body">
+                        <p>Open Vulnerability Assessment System. Comprehensive vulnerability scanner with 50,000+ NVTs covering CVEs and security checks.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">CVE Scanning</span>
+                            <span class="feature-tag">NVT Checks</span>
+                            <span class="feature-tag">Risk Scoring</span>
+                            <span class="feature-tag">CVSS Ratings</span>
+                        </div>
+                        <div class="tool-input-area">
+                            <input type="text" class="cyber-input full" id="openvas-target" placeholder="Target IP or range">
+                            <select class="cyber-select" id="openvas-scan">
+                                <option value="discovery">Discovery Scan</option>
+                                <option value="full">Full Vulnerability Scan</option>
+                                <option value="web">Web Application Scan</option>
+                            </select>
+                            <button class="cyber-btn primary" onclick="runSingleTool('openvas')">
+                                <i class="fas fa-play"></i> Run OpenVAS
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grim Tool Card -->
+                <div class="tool-card" data-tool="grim">
+                    <div class="tool-card-header grim">
+                        <i class="fas fa-ghost"></i>
+                        <h3>Grim</h3>
+                        <span class="tool-status active">ACTIVE</span>
+                    </div>
+                    <div class="tool-card-body">
+                        <p>Social media reconnaissance and user intelligence gathering. Collects profile data, connections and digital footprint analysis.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">Social Recon</span>
+                            <span class="feature-tag">User OSINT</span>
+                            <span class="feature-tag">Profile Enum</span>
+                            <span class="feature-tag">Footprint</span>
+                        </div>
+                        <div class="tool-input-area">
+                            <input type="text" class="cyber-input full" id="grim-target" placeholder="Username or email">
+                            <select class="cyber-select" id="grim-type">
+                                <option value="username">Username Search</option>
+                                <option value="email">Email Lookup</option>
+                                <option value="phone">Phone Recon</option>
+                            </select>
+                            <button class="cyber-btn primary" onclick="runSingleTool('grim')">
+                                <i class="fas fa-play"></i> Run Grim
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- theHarvester Tool Card -->
+                <div class="tool-card" data-tool="theharvester">
+                    <div class="tool-card-header harvester">
+                        <i class="fas fa-seedling"></i>
+                        <h3>theHarvester</h3>
+                        <span class="tool-status active">ACTIVE</span>
+                    </div>
+                    <div class="tool-card-body">
+                        <p>OSINT email harvesting and subdomain enumeration. Collects emails, subdomains, IPs and hostnames from public sources.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">Email Harvest</span>
+                            <span class="feature-tag">Subdomain Enum</span>
+                            <span class="feature-tag">IP Discovery</span>
+                            <span class="feature-tag">Multi-Source</span>
+                        </div>
+                        <div class="tool-input-area">
+                            <input type="text" class="cyber-input full" id="harvester-target" placeholder="domain.com">
+                            <select class="cyber-select" id="harvester-source">
+                                <option value="all">All Sources</option>
+                                <option value="google">Google</option>
+                                <option value="bing">Bing</option>
+                                <option value="shodan">Shodan</option>
+                                <option value="linkedin">LinkedIn</option>
+                            </select>
+                            <button class="cyber-btn primary" onclick="runSingleTool('theharvester')">
+                                <i class="fas fa-play"></i> Run Harvester
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tool Output Terminal -->
+            <div class="panel tool-output-panel">
+                <div class="panel-header">
+                    <h2><i class="fas fa-terminal"></i> Tool Output</h2>
+                    <div class="header-actions">
+                        <button class="btn-small" onclick="copyOutput()"><i class="fas fa-copy"></i> Copy</button>
+                        <button class="btn-small" onclick="clearOutput()"><i class="fas fa-trash"></i> Clear</button>
+                    </div>
+                </div>
+                <div id="tool-terminal" class="terminal-body large">
+                    <div class="terminal-line">
+                        <span class="t-prompt">scanhexa@tools:~$</span>
+                        <span class="t-text"> Select a tool and run it to see output here...</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================== ABOUT SECTION =================== -->
+        <section id="about" class="section">
+            <div class="section-header">
+                <h1 class="section-title"><i class="fas fa-info-circle"></i> About ScanHexa</h1>
+                <p class="section-subtitle">Advanced cybersecurity reconnaissance & vulnerability assessment platform</p>
+            </div>
+
+            <div class="about-grid">
+                <div class="panel about-card">
+                    <div class="about-logo">
+                        <div class="hex-logo large"><i class="fas fa-shield-alt"></i></div>
+                        <h2>SCANHEXA</h2>
+                        <p class="version">Version 1.0.0 | Build 2024</p>
+                    </div>
+                    <p class="about-desc">ScanHexa is a comprehensive cybersecurity reconnaissance and vulnerability assessment platform that integrates industry-standard tools into a unified, intelligent scanning interface.</p>
+                </div>
+
+                <div class="panel tools-overview">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-toolbox"></i> Integrated Tools</h2>
+                    </div>
+                    <div class="tools-list">
+                        <div class="tool-item">
+                            <i class="fas fa-network-wired nmap-color"></i>
+                            <div>
+                                <strong>Nmap</strong>
+                                <p>Network exploration and security auditing</p>
+                            </div>
+                        </div>
+                        <div class="tool-item">
+                            <i class="fas fa-globe nikto-color"></i>
+                            <div>
+                                <strong>Nikto</strong>
+                                <p>Web server vulnerability scanning</p>
+                            </div>
+                        </div>
+                        <div class="tool-item">
+                            <i class="fas fa-database sqlmap-color"></i>
+                            <div>
+                                <strong>SQLMap</strong>
+                                <p>SQL injection testing automation</p>
+                            </div>
+                        </div>
+                        <div class="tool-item">
+                            <i class="fas fa-shield-alt openvas-color"></i>
+                            <div>
+                                <strong>OpenVAS</strong>
+                                <p>Open vulnerability assessment system</p>
+                            </div>
+                        </div>
+                        <div class="tool-item">
+                            <i class="fas fa-ghost grim-color"></i>
+                            <div>
+                                <strong>Grim</strong>
+                                <p>Social media reconnaissance</p>
+                            </div>
+                        </div>
+                        <div class="tool-item">
+                            <i class="fas fa-seedling harvester-color"></i>
+                            <div>
+                                <strong>theHarvester</strong>
+                                <p>OSINT data collection & analysis</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel disclaimer-card">
+                    <div class="panel-header">
+                        <h2><i class="fas fa-exclamation-triangle"></i> Legal Disclaimer</h2>
+                    </div>
+                    <div class="disclaimer-text">
+                        <p><strong>⚠️ IMPORTANT:</strong> This tool is intended for authorized security testing and educational purposes ONLY.</p>
+                        <ul>
+                            <li>Only scan systems you own or have explicit written permission to test</li>
+                            <li>Unauthorized scanning may violate computer crime laws</li>
+                            <li>Users are solely responsible for their actions</li>
+                            <li>This tool should be used in compliance with all applicable laws</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Loading Modal -->
+    <div id="loading-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="scan-animation">
+                <div class="scan-ring"></div>
+                <div class="scan-ring delay1"></div>
+                <div class="scan-ring delay2"></div>
+                <i class="fas fa-crosshairs scan-center-icon"></i>
+            </div>
+            <h3 id="loading-title">Scanning Target...</h3>
+            <p id="loading-msg">Running security reconnaissance...</p>
+            <div class="modal-progress">
+                <div class="modal-progress-fill" id="modal-progress-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="./js/app.js?v=1.1"></script>
+
+</body>
+
+</html>
