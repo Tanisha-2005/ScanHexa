@@ -34,17 +34,13 @@ Output Layer – Displays reports in readable format
 
 📂 Project Structure
 ScanHexa/
-│── app.js / main.py
-│── modules/
-│   ├── scanner/
-│   ├── recon/
-│   ├── vulnerability/
-│── routes/
-│── public/
-│── views/
-│── results/
-│── package.json / requirements.txt
-│── README.md
+│── server.js           # Main Express server
+│── routes/             # API routes (scan, report, tools)
+│── public/             # Frontend assets (HTML, CSS, JS)
+│── utils/              # Core logic (scanner, simulations)
+│── reports/            # Persistent storage for scan JSONs
+│── package.json        # Dependencies and scripts
+│── README.md           # Documentation
 
 ⚙️ Installation
 
