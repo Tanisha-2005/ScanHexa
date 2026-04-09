@@ -54,7 +54,8 @@ router.get('/stats', (req, res) => {
         files.forEach(file => {
             try {
                 const data = JSON.parse(fs.readFileSync(path.join(reportsDir, file), 'utf8'));
-                if (data.riskAssessment && data.riskAssessment.level === 'critical') {
+                const level = (data.riskAssessment?.level || '').toLowerCase();
+                if (level === 'critical') {
                     criticalVulns++;
                 }
                 if (data.data && data.data.nmap && data.data.nmap.openPorts) {
