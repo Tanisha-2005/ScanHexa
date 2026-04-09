@@ -10,14 +10,8 @@ const rateLimit = require('express-rate-limit');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-console.log("Current Directory:", __dirname);
-console.log("Files in root:", fs.readdirSync(__dirname));
-if (fs.existsSync(path.join(__dirname, 'public'))) {
-    console.log("Files in public:", fs.readdirSync(path.join(__dirname, 'public')));
-    if (fs.existsSync(path.join(__dirname, 'public', 'js'))) {
-        console.log("Files in public/js:", fs.readdirSync(path.join(__dirname, 'public', 'js')));
-    }
-}
+const app = express();
+const PORT = process.env.PORT || 3000;
 
 // =================== MIDDLEWARE ===================
 app.use(helmet({

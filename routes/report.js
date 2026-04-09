@@ -80,7 +80,7 @@ router.get('/stats', (req, res) => {
 router.get('/:id', (req, res) => {
     try {
         const id = req.params.id;
-        if (!id || id === 'stats' || id === 'list') return; // Should be handled by other routes
+        if (!id || id === 'stats' || id === 'list') return; 
 
         const filePath = path.join(getReportsDir(), `report_${id}.json`);
 
@@ -112,4 +112,4 @@ router.delete('/:id', (req, res) => {
     }
 });
 
-module.exports = router;
+module.exports = router;
