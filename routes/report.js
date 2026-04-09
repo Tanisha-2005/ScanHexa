@@ -3,9 +3,12 @@ const router = express.Router();
 const fs = require('fs');
 const path = require('path');
 
+// Helper to get reports directory
+const getReportsDir = () => path.join(__dirname, '..', 'reports');
+
 router.get('/list', (req, res) => {
     try {
-        const reportsDir = path.join(__dirname, '..', 'reports');
+        const reportsDir = getReportsDir();
         if (!fs.existsSync(reportsDir)) {
             return res.json({ reports: [] });
         }
@@ -13,18 +16,21 @@ router.get('/list', (req, res) => {
         const files = fs.readdirSync(reportsDir).filter(f => f.startsWith('report_') && f.endsWith('.json'));
 
         const reports = files.map(file => {
-            const data = fs.readFileSync(path.join(reportsDir, file), 'utf8');
             try {
+                const filePath = path.join(reportsDir, file);
+                const data = fs.readFileSync(filePath, 'utf8');
                 const parsed = JSON.parse(data);
+                
                 // Return a summary of the report to the list
                 return {
-                    id: parsed.id,
-                    target: parsed.target,
-                    timestamp: parsed.timestamp,
-                    riskAssessment: parsed.riskAssessment,
-                    success: parsed.success
+                    id: parsed.id || file.replace('report_', '').replace('.json', ''),
+                    target: parsed.target || 'Unknown',
+                    timestamp: parsed.timestamp || new Date().toISOString(),
+                    riskAssessment: parsed.riskAssessment || { level: 'low', score: 0 },
+                    success: parsed.success !== undefined ? parsed.success : true
                 };
             } catch (e) {
+                console.error(`Error reading report file ${file}:`, e);
                 return null;
             }
         }).filter(r => r !== null).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
@@ -39,7 +45,7 @@ router.get('/list', (req, res) => {
 // Get aggregate stats
 router.get('/stats', (req, res) => {
     try {
-        const reportsDir = path.join(__dirname, '..', 'reports');
+        const reportsDir = getReportsDir();
         if (!fs.existsSync(reportsDir)) {
             return res.json({ totalScans: 0, criticalVulns: 0, openPorts: 0, reportsCount: 0 });
         }
@@ -74,7 +80,9 @@ router.get('/stats', (req, res) => {
 router.get('/:id', (req, res) => {
     try {
         const id = req.params.id;
-        const filePath = path.join(__dirname, '..', 'reports', `report_${id}.json`);
+        if (!id || id === 'stats' || id === 'list') return; // Should be handled by other routes
+
+        const filePath = path.join(getReportsDir(), `report_${id}.json`);
 
         if (fs.existsSync(filePath)) {
             const data = fs.readFileSync(filePath, 'utf8');
@@ -91,7 +99,7 @@ router.get('/:id', (req, res) => {
 router.delete('/:id', (req, res) => {
     try {
         const id = req.params.id;
-        const filePath = path.join(__dirname, '..', 'reports', `report_${id}.json`);
+        const filePath = path.join(getReportsDir(), `report_${id}.json`);
 
         if (fs.existsSync(filePath)) {
             fs.unlinkSync(filePath);
@@ -104,4 +112,4 @@ router.delete('/:id', (req, res) => {
     }
 });
 
-module.exports = router;
+module.exports = router;
