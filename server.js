@@ -10,6 +10,15 @@ const rateLimit = require('express-rate-limit');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+console.log("Current Directory:", __dirname);
+console.log("Files in root:", fs.readdirSync(__dirname));
+if (fs.existsSync(path.join(__dirname, 'public'))) {
+    console.log("Files in public:", fs.readdirSync(path.join(__dirname, 'public')));
+    if (fs.existsSync(path.join(__dirname, 'public', 'js'))) {
+        console.log("Files in public/js:", fs.readdirSync(path.join(__dirname, 'public', 'js')));
+    }
+}
+
 // =================== MIDDLEWARE ===================
 app.use(helmet({
     contentSecurityPolicy: false,
@@ -68,7 +77,7 @@ app.use((err, req, res, next) => {
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`
   ╔═══════════════════════════════════════════════╗
-  ║   CYBREXA - Cybersecurity Recon Platform     ║
+  ║   SCANHEXA - Cybersecurity Recon Platform     ║
   ║   Server running on http://localhost:${PORT}       ║
   ║   Version: 1.0.0                             ║
   ╚═══════════════════════════════════════════════╝

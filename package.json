@@ -1,7 +1,7 @@
 {
-    "name": "cybrexa",
+    "name": "scanhexa",
     "version": "1.0.0",
-    "description": "Advanced Cybersecurity Recon Platform",
+    "description": "SCANHEXA - Cybersecurity Recon Platform",
     "main": "server.js",
     "scripts": {
         "start": "node server.js",
