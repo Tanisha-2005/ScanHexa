@@ -39,10 +39,14 @@ if (!fs.existsSync(reportsDir)) fs.mkdirSync(reportsDir, { recursive: true });
 const scanRoutes = require('./routes/scan');
 const reportRoutes = require('./routes/report');
 const toolRoutes = require('./routes/tools');
+const ipinfoRoutes = require('./routes/ipinfo');
+const toolHistoryRoutes = require('./routes/tool_history');
 
 app.use('/api/scan', scanRoutes);
 app.use('/api/report', reportRoutes);
 app.use('/api/tools', toolRoutes);
+app.use('/api/ipinfo', ipinfoRoutes);
+app.use('/api/tool-history', toolHistoryRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

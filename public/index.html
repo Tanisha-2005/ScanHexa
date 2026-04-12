@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<!-- TESTING_UNIQUE_STRING_12345 -->
 
 <head>
     <meta charset="UTF-8">
@@ -550,6 +551,10 @@
                                 <i class="fas fa-play"></i> Run Nmap
                             </button>
                         </div>
+                        <div class="tool-recent-history" id="nmap-history">
+                            <h4 class="history-title">RECENT SCANS</h4>
+                            <div class="history-items"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -578,6 +583,10 @@
                             <button class="cyber-btn primary" onclick="runSingleTool('nikto')">
                                 <i class="fas fa-play"></i> Run Nikto
                             </button>
+                        </div>
+                        <div class="tool-recent-history" id="nikto-history">
+                            <h4 class="history-title">RECENT SCANS</h4>
+                            <div class="history-items"></div>
                         </div>
                     </div>
                 </div>
@@ -608,6 +617,10 @@
                                 <i class="fas fa-play"></i> Run SQLMap
                             </button>
                         </div>
+                        <div class="tool-recent-history" id="sqlmap-history">
+                            <h4 class="history-title">RECENT SCANS</h4>
+                            <div class="history-items"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -637,6 +650,10 @@
                                 <i class="fas fa-play"></i> Run OpenVAS
                             </button>
                         </div>
+                        <div class="tool-recent-history" id="openvas-history">
+                            <h4 class="history-title">RECENT SCANS</h4>
+                            <div class="history-items"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -665,6 +682,10 @@
                             <button class="cyber-btn primary" onclick="runSingleTool('grim')">
                                 <i class="fas fa-play"></i> Run Grim
                             </button>
+                        </div>
+                        <div class="tool-recent-history" id="grim-history">
+                            <h4 class="history-title">RECENT SCANS</h4>
+                            <div class="history-items"></div>
                         </div>
                     </div>
                 </div>
@@ -697,6 +718,41 @@
                                 <i class="fas fa-play"></i> Run Harvester
                             </button>
                         </div>
+                        <div class="tool-recent-history" id="theharvester-history">
+                            <h4 class="history-title">RECENT SCANS</h4>
+                            <div class="history-items"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- IP Intelligence Tool Card -->
+                <div class="tool-card" data-tool="ipinfo">
+                    <div class="tool-card-header info">
+                        <i class="fas fa-map-marker-alt" style="color: #3498db;"></i>
+                        <h3>IP Intelligence</h3>
+                        <span class="tool-status active">ACTIVE</span>
+                    </div>
+                    <div class="tool-card-body">
+                        <p>Deep reconnaissance on any IP address. Unified lookup for Geo-location, ASN, ISP, and organizational data.</p>
+                        <p class="tool-note" style="font-size: 0.8rem; color: #ffab00; margin-bottom: 10px;">
+                            <i class="fas fa-exclamation-circle"></i> Note: This tool only supports <strong>public IP addresses</strong>.
+                        </p>
+                        <div class="tool-features">
+                            <span class="feature-tag">Geo-Location</span>
+                            <span class="feature-tag">ASN Lookup</span>
+                            <span class="feature-tag">ISP Tracking</span>
+                            <span class="feature-tag">Timezone</span>
+                        </div>
+                        <div class="tool-input-area">
+                            <input type="text" class="cyber-input full" id="ipinfo-target" placeholder="8.8.8.8">
+                            <button class="cyber-btn primary" onclick="runSingleTool('ipinfo')">
+                                <i class="fas fa-search"></i> Lookup IP
+                            </button>
+                        </div>
+                        <div class="tool-recent-history" id="ipinfo-history">
+                            <h4 class="history-title">RECENT SCANS</h4>
+                            <div class="history-items"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -723,80 +779,109 @@
         <section id="about" class="section">
             <div class="section-header">
                 <h1 class="section-title"><i class="fas fa-info-circle"></i> About ScanHexa</h1>
-                <p class="section-subtitle">Advanced cybersecurity reconnaissance & vulnerability assessment platform</p>
+                <p class="section-subtitle">The next evolution in AI-driven reconnaissance and vulnerability intelligence.</p>
             </div>
 
-            <div class="about-grid">
-                <div class="panel about-card">
-                    <div class="about-logo">
-                        <div class="hex-logo large"><i class="fas fa-shield-alt"></i></div>
-                        <h2>SCANHEXA</h2>
-                        <p class="version">Version 1.0.0 | Build 2024</p>
+            <div class="about-hero">
+                <div class="panel about-main-card">
+                    <div class="about-brand-area">
+                        <div class="hex-logo large glow"><i class="fas fa-shield-alt"></i></div>
+                        <div class="brand-text-block">
+                            <h2>SCANHEXA <span class="v-tag">v2.1.0-PRO</span></h2>
+                            <p class="build-info">CORE ENGINE: NODE.JS | DATABASE: LOCAL_REPORTS | OSINT: ENABLED</p>
+                        </div>
                     </div>
-                    <p class="about-desc">ScanHexa is a comprehensive cybersecurity reconnaissance and vulnerability assessment platform that integrates industry-standard tools into a unified, intelligent scanning interface.</p>
+                    <p class="about-description">
+                        ScanHexa is a professional-grade cybersecurity platform designed for deep network reconnaissance and automated vulnerability assessment. By unifying industry-standard security tools into a cohesive, high-performance interface, ScanHexa provides security professionals with immediate, actionable intelligence on any target.
+                    </p>
+                    <div class="about-stats-mini">
+                        <div class="a-mini-stat">
+                            <span class="a-m-val">10+</span>
+                            <span class="a-m-lbl">TOOLS</span>
+                        </div>
+                        <div class="a-mini-stat">
+                            <span class="a-m-val">100%</span>
+                            <span class="a-m-lbl">OPEN SOURCE</span>
+                        </div>
+                        <div class="a-mini-stat">
+                            <span class="a-m-val">LIVE</span>
+                            <span class="a-m-lbl">TERMINAL</span>
+                        </div>
+                    </div>
                 </div>
+            </div>
 
+            <div class="about-features-grid">
+                <div class="panel feature-card">
+                    <i class="fas fa-microchip f-icon"></i>
+                    <h3>Unified Engine</h3>
+                    <p>One interface, multiple weapons. Seamlessly switch between Nmap, Nikto, and custom OSINT scripts.</p>
+                </div>
+                <div class="panel feature-card">
+                    <i class="fas fa-map-marker-alt f-icon" style="color:var(--secondary);"></i>
+                    <h3>IP Intelligence</h3>
+                    <p>New integrated IPinfo module for global geo-location, ASN tracking, and organizational reconnaissance.</p>
+                </div>
+                <div class="panel feature-card">
+                    <i class="fas fa-database f-icon" style="color:var(--warning);"></i>
+                    <h3>Persistent History</h3>
+                    <p>Local persistence for each tool scan. Monitor history directly within tool cards for easy audits.</p>
+                </div>
+                <div class="panel feature-card">
+                    <i class="fas fa-file-pdf f-icon" style="color:var(--danger);"></i>
+                    <h3>Pro Reporting</h3>
+                    <p>Export results as structured JSON or professional PDF reports optimized for security audits.</p>
+                </div>
+            </div>
+
+            <div class="about-grid secondary">
                 <div class="panel tools-overview">
                     <div class="panel-header">
-                        <h2><i class="fas fa-toolbox"></i> Integrated Tools</h2>
+                        <h2><i class="fas fa-project-diagram"></i> Integrated Intelligence Modules</h2>
                     </div>
-                    <div class="tools-list">
-                        <div class="tool-item">
-                            <i class="fas fa-network-wired nmap-color"></i>
-                            <div>
-                                <strong>Nmap</strong>
-                                <p>Network exploration and security auditing</p>
-                            </div>
+                    <div class="tools-list-horizontal">
+                        <div class="h-tool-item" title="Network Mapper">
+                            <i class="fas fa-network-wired"></i>
+                            <span>Nmap</span>
                         </div>
-                        <div class="tool-item">
-                            <i class="fas fa-globe nikto-color"></i>
-                            <div>
-                                <strong>Nikto</strong>
-                                <p>Web server vulnerability scanning</p>
-                            </div>
+                        <div class="h-tool-item" title="Web Scanner">
+                            <i class="fas fa-globe"></i>
+                            <span>Nikto</span>
                         </div>
-                        <div class="tool-item">
-                            <i class="fas fa-database sqlmap-color"></i>
-                            <div>
-                                <strong>SQLMap</strong>
-                                <p>SQL injection testing automation</p>
-                            </div>
+                        <div class="h-tool-item" title="IP Intel">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>IPinfo</span>
                         </div>
-                        <div class="tool-item">
-                            <i class="fas fa-shield-alt openvas-color"></i>
-                            <div>
-                                <strong>OpenVAS</strong>
-                                <p>Open vulnerability assessment system</p>
-                            </div>
+                        <div class="h-tool-item" title="SQL Injection">
+                            <i class="fas fa-database"></i>
+                            <span>SQLMap</span>
                         </div>
-                        <div class="tool-item">
-                            <i class="fas fa-ghost grim-color"></i>
-                            <div>
-                                <strong>Grim</strong>
-                                <p>Social media reconnaissance</p>
-                            </div>
+                        <div class="h-tool-item" title="Vulnerability Sys">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>OpenVAS</span>
                         </div>
-                        <div class="tool-item">
-                            <i class="fas fa-seedling harvester-color"></i>
-                            <div>
-                                <strong>theHarvester</strong>
-                                <p>OSINT data collection & analysis</p>
-                            </div>
+                        <div class="h-tool-item" title="OSINT Engine">
+                            <i class="fas fa-seedling"></i>
+                            <span>OSINT</span>
+                        </div>
+                        <div class="h-tool-item" title="Social Recon">
+                            <i class="fas fa-ghost"></i>
+                            <span>Grim</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="panel disclaimer-card">
                     <div class="panel-header">
-                        <h2><i class="fas fa-exclamation-triangle"></i> Legal Disclaimer</h2>
+                        <h2><i class="fas fa-gavel"></i> Ethics & Legal Compliance</h2>
                     </div>
                     <div class="disclaimer-text">
-                        <p><strong>⚠️ IMPORTANT:</strong> This tool is intended for authorized security testing and educational purposes ONLY.</p>
-                        <ul>
-                            <li>Only scan systems you own or have explicit written permission to test</li>
-                            <li>Unauthorized scanning may violate computer crime laws</li>
-                            <li>Users are solely responsible for their actions</li>
-                            <li>This tool should be used in compliance with all applicable laws</li>
+                        <p><strong><i class="fas fa-exclamation-triangle"></i> OPERATIONAL SECURITY:</strong> Access to ScanHexa is restricted to authorized testing only. Users must adhere to the following framework:</p>
+                        <ul class="ethics-list">
+                            <li><i class="fas fa-check-circle"></i> Verify explicit written permission before scanning third-party infrastructure.</li>
+                            <li><i class="fas fa-check-circle"></i> Comply with the Computer Misuse Act and local jurisdictional laws.</li>
+                            <li><i class="fas fa-check-circle"></i> Ensure scanning activity does not disrupt target business operations.</li>
+                            <li><i class="fas fa-check-circle"></i> Responsibly disclose any critical vulnerabilities discovered.</li>
                         </ul>
                     </div>
                 </div>

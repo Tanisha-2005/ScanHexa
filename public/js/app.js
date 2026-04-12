@@ -34,6 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Load actual reports and stats from backend
     loadReports();
     loadDashboardStats();
+    loadAllToolHistory();
 
     // Handle initial hash routing
     const hash = window.location.hash.substring(1);
@@ -494,20 +495,108 @@ async function runSingleTool(toolName) {
 
     toolTerminalLog(`Running ${toolName} on ${target}...`);
     try {
-        const res = await fetch("/api/tools/run", {
-            method: "POST",
+        let endpoint = "/api/tools/run";
+        let method = "POST";
+        let body = JSON.stringify({ tool: toolName, domain: target, options: extraOptions });
+
+        if (toolName === 'ipinfo') {
+            endpoint = `/api/ipinfo/${target}`;
+            method = "GET";
+            body = null;
+        }
+
+        const res = await fetch(endpoint, {
+            method: method,
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ tool: toolName, domain: target, options: extraOptions })
+            body: body
         });
         const data = await res.json();
         
         if (data.error) {
             toolTerminalLog(`Error: ${data.error}`, "error");
         } else {
-            toolTerminalLog(data.output || "Completed with no output.", "ok");
+            let output = data.output;
+            if (toolName === 'ipinfo' && data.data) {
+                const d = data.data;
+                output = `
+IP Lookup: ${d.query}
+---------------------------
+Location: ${d.city}, ${d.regionName}, ${d.country}
+ISP:      ${d.isp}
+Org:      ${d.org}
+ASN:      ${d.as}
+Lat/Lon:  ${d.lat}, ${d.lon}
+Timezone: ${d.timezone}
+---------------------------`;
+            }
+            toolTerminalLog(output || "Completed with no output.", "ok");
+            // Save to history
+            saveToolHistory(toolName, target, output || "Completed with no output.");
         }
     } catch(e) {
         toolTerminalLog(`Exception: ${e.message}`, "error");
+    }
+}
+
+// =================== TOOL HISTORY LOGIC ===================
+async function loadAllToolHistory() {
+    const tools = ['nmap', 'nikto', 'sqlmap', 'openvas', 'grim', 'theharvester', 'ipinfo'];
+    tools.forEach(tool => loadToolHistory(tool));
+}
+
+async function loadToolHistory(tool) {
+    try {
+        const res = await fetch(`/api/tool-history/${tool}`);
+        const data = await res.json();
+        const container = document.querySelector(`#${tool}-history .history-items`);
+        if (!container) return;
+
+        if (!data.history || data.history.length === 0) {
+            container.innerHTML = '<div class="empty-state" style="font-size:10px; color:var(--text-muted);">No history.</div>';
+            return;
+        }
+
+        container.innerHTML = data.history.map(entry => `
+            <div class="history-item" onclick="viewHistoryItem('${tool}', '${entry.id}')">
+                <span class="history-item-target">${entry.target}</span>
+                <span class="history-item-time">${new Date(entry.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+            </div>
+        `).join('');
+
+        // Store history in memory for easy viewing
+        if (!State.toolHistory) State.toolHistory = {};
+        State.toolHistory[tool] = data.history;
+
+    } catch (e) {
+        console.error(`Failed to load history for ${tool}`, e);
+    }
+}
+
+async function saveToolHistory(tool, target, output) {
+    try {
+        await fetch('/api/tool-history/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tool, target, output })
+        });
+        loadToolHistory(tool); // Reload this tool's history
+    } catch (e) {
+        console.error('Failed to save tool history', e);
+    }
+}
+
+function viewHistoryItem(tool, entryId) {
+    if (!State.toolHistory || !State.toolHistory[tool]) return;
+    const entry = State.toolHistory[tool].find(e => e.id === entryId);
+    if (entry) {
+        clearOutput();
+        toolTerminalLog(`Restoring historical report for ${tool} on ${entry.target}...`, 'info');
+        toolTerminalLog(`Timestamp: ${new Date(entry.timestamp).toLocaleString()}`, 'info');
+        toolTerminalLog('-------------------------------------------', 'info');
+        toolTerminalLog(entry.output, 'ok');
+        
+        // Scroll to terminal
+        document.querySelector('.tool-output-panel').scrollIntoView({ behavior: 'smooth' });
     }
 }
 
