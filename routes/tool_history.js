@@ -60,4 +60,28 @@ router.post('/save', (req, res) => {
     }
 });
 
+// Delete a specific history entry
+router.delete('/:tool/:id', (req, res) => {
+    try {
+        const { tool, id } = req.params;
+        const toolFilePath = path.join(HISTORY_DIR, `${tool}.json`);
+
+        if (!fs.existsSync(toolFilePath)) {
+            return res.status(404).json({ error: 'History not found' });
+        }
+
+        let history = JSON.parse(fs.readFileSync(toolFilePath, 'utf8'));
+        const filteredHistory = history.filter(entry => entry.id !== id);
+
+        if (history.length === filteredHistory.length) {
+            return res.status(404).json({ error: 'Entry not found' });
+        }
+
+        fs.writeFileSync(toolFilePath, JSON.stringify(filteredHistory, null, 2));
+        res.json({ success: true, message: 'Entry deleted' });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to delete entry' });
+    }
+});
+
 module.exports = router;

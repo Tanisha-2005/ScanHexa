@@ -2398,4 +2398,39 @@ body {
     font-size: 14px;
     line-height: 1.5;
 }
+
+/* ======== HISTORY DELETE STYLES ======== */
+.history-item-left {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.history-delete-btn {
+    background: rgba(255, 51, 102, 0.2);
+    border: 1px solid rgba(255, 51, 102, 0.4);
+    color: #ff4d4d;
+    cursor: pointer;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    transition: all 0.2s;
+    opacity: 1;
+    margin-left: 10px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.history-item:hover .history-delete-btn {
+    opacity: 1;
+}
+
+.history-delete-btn:hover {
+    background: var(--danger);
+    color: #fff;
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(255, 51, 102, 0.4);
+}
 

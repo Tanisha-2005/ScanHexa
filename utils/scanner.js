@@ -59,6 +59,9 @@ async function runScan(target, tools, profile = 'standard', options = {}) {
                     case 'grim':
                         results.grim = await runGrim(target, options);
                         break;
+                    case 'headers':
+                        results.headers = await runHeaders(target);
+                        break;
                     default:
                         console.warn(`Unknown tool: ${tool}`);
                 }
@@ -165,6 +168,14 @@ async function simulateTool(tool, target, options) {
             return {
                 data: { profiles: results, identity: ident, searchType: type },
                 rawOutput: `[+] Initiating Grim Social Reconnaissance (Mode: ${type})\n[+] Target Identity: ${target}\n\n[~] Searching common platforms...\n${results.map(r => `[+] Found match: ${r}`).join('\n')}\n\n[!] Recon complete! Found ${results.length} potential footprints.`
+            };
+        case 'headers':
+            return {
+                data: {
+                    missing: ["Content-Security-Policy", "X-Frame-Options", "Strict-Transport-Security"],
+                    present: ["X-XSS-Protection", "X-Content-Type-Options"]
+                },
+                rawOutput: `Security Header Report for ${target}\n-------------------------------------------\n[MISSING] Content-Security-Policy\n[MISSING] X-Frame-Options (Clickjacking protection)\n[MISSING] Strict-Transport-Security (HSTS)\n[PRESENT] X-XSS-Protection: 1; mode=block\n[PRESENT] X-Content-Type-Options: nosniff\n-------------------------------------------`
             };
         default:
             return { error: `Simulation not configured for ${tool}` };
@@ -328,6 +339,48 @@ async function runGrim(target, options = {}) {
         };
     } catch (error) {
         throw new Error(`Grim tool failed: ${error.message}`);
+    }
+}
+
+async function runHeaders(target) {
+    const axios = require('axios');
+    const url = target.startsWith('http') ? target : `http://${target}`;
+    
+    try {
+        const response = await axios.head(url, { timeout: 10000 });
+        const headers = response.headers;
+        const securityHeaders = [
+            'content-security-policy',
+            'x-frame-options',
+            'strict-transport-security',
+            'x-xss-protection',
+            'x-content-type-options',
+            'referrer-policy',
+            'permissions-policy'
+        ];
+
+        let rawOutput = `Security Header Report for ${target}\n-------------------------------------------\n`;
+        const present = [];
+        const missing = [];
+
+        securityHeaders.forEach(h => {
+            if (headers[h]) {
+                present.push(h);
+                rawOutput += `[PRESENT] ${h}: ${headers[h]}\n`;
+            } else {
+                missing.push(h);
+                rawOutput += `[MISSING] ${h}\n`;
+            }
+        });
+
+        rawOutput += `-------------------------------------------`;
+
+        return {
+            data: { present, missing, all: headers },
+            rawOutput
+        };
+    } catch (error) {
+        throw new Error(`Header check failed: ${error.message}`);
     }
 }
 

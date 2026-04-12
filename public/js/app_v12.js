@@ -590,31 +590,24 @@ async function saveToolHistory(tool, target, output) {
     }
 }
 
-// Define globally on window to ensure availability from inline onclick
-window.deleteHistoryItem = async function(event, tool, id) {
-    console.log(`[ScanHexa] Deletion triggered for tool: ${tool}, id: ${id}`);
+async function deleteHistoryItem(event, tool, id) {
     event.stopPropagation(); // Prevent triggering viewHistoryItem
     
-    showToast(`Removing ${tool} record...`, 'info');
+    // Using toast for feedback instead of blocking confirm()
+    showToast(`Deleting ${tool} scan records...`, 'info');
 
     try {
-        const url = `/api/tool-history/${tool}/${id}`;
-        console.log(`[ScanHexa] Sending DELETE request to: ${url}`);
-        
-        const res = await fetch(url, { method: 'DELETE' });
+        const res = await fetch(`/api/tool-history/${tool}/${id}`, {
+            method: 'DELETE'
+        });
         const data = await res.json();
-        
         if (data.success) {
-            console.log(`[ScanHexa] Deletion successful for id: ${id}`);
             loadToolHistory(tool); // Reload this tool's history
-        } else {
-            console.error(`[ScanHexa] Deletion failed:`, data.error);
-            showToast('Deletion failed', 'error');
         }
     } catch (e) {
-        console.error('[ScanHexa] Error in deleteHistoryItem:', e);
+        console.error('Failed to delete history item', e);
     }
-};
+}
 
 function viewHistoryItem(tool, entryId) {
     if (!State.toolHistory || !State.toolHistory[tool]) return;

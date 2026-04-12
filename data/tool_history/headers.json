@@ -1,0 +1,8 @@
+[
+  {
+    "id": "1775992261547",
+    "target": "google.com",
+    "timestamp": "2026-04-12T11:11:01.547Z",
+    "output": "Security Header Report for google.com\n-------------------------------------------\n[MISSING] Content-Security-Policy\n[MISSING] X-Frame-Options (Clickjacking protection)\n[MISSING] Strict-Transport-Security (HSTS)\n[PRESENT] X-XSS-Protection: 1; mode=block\n[PRESENT] X-Content-Type-Options: nosniff\n-------------------------------------------"
+  }
+]

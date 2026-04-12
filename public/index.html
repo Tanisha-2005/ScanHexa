@@ -725,6 +725,33 @@
                     </div>
                 </div>
 
+                <!-- Security Headers Tool Card -->
+                <div class="tool-card" data-tool="headers">
+                    <div class="tool-card-header warning">
+                        <i class="fas fa-file-code" style="color: #f39c12;"></i>
+                        <h3>Security Headers</h3>
+                        <span class="tool-status active">ACTIVE</span>
+                    </div>
+                    <div class="tool-card-body">
+                        <p>Analyze HTTP security headers. Check for CSP, HSTS, X-Frame-Options, and more.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">CSP Audit</span>
+                            <span class="feature-tag">HSTS Check</span>
+                            <span class="feature-tag">XSS Protection</span>
+                        </div>
+                        <div class="tool-input-area">
+                            <input type="text" class="cyber-input full" id="headers-target" placeholder="https://example.com">
+                            <button class="cyber-btn primary" onclick="runSingleTool('headers')">
+                                <i class="fas fa-search"></i> Scan Headers
+                            </button>
+                        </div>
+                        <div class="tool-recent-history" id="headers-history">
+                            <h4 class="history-title">RECENT SCANS</h4>
+                            <div class="history-items"></div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- IP Intelligence Tool Card -->
                 <div class="tool-card" data-tool="ipinfo">
                     <div class="tool-card-header info">
@@ -852,6 +879,10 @@
                             <i class="fas fa-map-marker-alt"></i>
                             <span>IPinfo</span>
                         </div>
+                        <div class="h-tool-item" title="Security Headers">
+                            <i class="fas fa-file-code"></i>
+                            <span>Headers</span>
+                        </div>
                         <div class="h-tool-item" title="SQL Injection">
                             <i class="fas fa-database"></i>
                             <span>SQLMap</span>
@@ -909,7 +940,7 @@
     <!-- Notification Toast -->
     <div id="toast-container" class="toast-container"></div>
 
-    <script src="./js/app.js?v=1.1"></script>
+    <script src="./js/app_v13.js"></script>
 
 </body>
 
