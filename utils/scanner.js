@@ -328,12 +328,23 @@ ${target}.    300  IN  MX  10 aspmx.l.google.com.`
             };
         }
         case 'hydra': {
-            return {
-                data: { target, protocol: 'ssh', status: 'vulnerable', found: true, credentials: { user: 'admin', pass: 'password123' } },
-                rawOutput: `Hydra v9.2 (c) 2021 by van Hauser/THC - Please do not use in military or secret service organizations, or for illegal purposes.
-[22][ssh] host: ${target}   login: admin   password: password123
+            const proto = options.protocol || 'ssh';
+            const isVulnerable = target.includes('vulnerable') || target.includes('test') || Math.random() > 0.7;
+            
+            if (isVulnerable) {
+                return {
+                    data: { target, protocol: proto, status: 'vulnerable', found: true, credentials: { user: 'admin', pass: 'password123' } },
+                    rawOutput: `Hydra v9.2 (c) 2021 by van Hauser/THC - Please do not use in military or secret service organizations, or for illegal purposes.
+[${proto === 'ssh' ? 22 : 80}][${proto}] host: ${target}   login: admin   password: password123
 1 of 1 target successfully completed, 1 valid password found.`
-            };
+                };
+            } else {
+                return {
+                    data: { target, protocol: proto, status: 'secure', found: false, credentials: null },
+                    rawOutput: `Hydra v9.2 (c) 2021 by van Hauser/THC
+[${proto === 'ssh' ? 22 : 80}][${proto}] host: ${target}   0 of 1 target successfully completed, 0 valid passwords found.`
+                };
+            }
         }
         case 'ssl': {
             return {
@@ -446,11 +457,51 @@ async function runSherlock(target, options = {}, executable = 'sherlock') {
     }
 }
 
-async function runHydra(target) {
-    // Basic SSH brute force simulation for testing
-    const command = `hydra -l admin -P common_passwords.txt ${target} ssh`;
-    const { stdout } = await execAsync(command, { timeout: 60000 });
-    return { data: stdout, rawOutput: stdout };
+async function runHydra(target, options = {}) {
+    const protocol = options.protocol || 'ssh';
+    const threads = options.threads || 4;
+    const login = options.login || 'admin';
+    const passlist = options.passlist || 'common_passwords.txt';
+    
+    // Hydra command with efficiency flags (-t for threads, -f to stop on first success)
+    const command = `hydra -l ${login} -P ${passlist} -t ${threads} -f ${target} ${protocol}`;
+    
+    try {
+        const { stdout } = await execAsync(command, { timeout: 300000 }); // Longer timeout for brute force
+        return { data: parseHydraOutput(stdout), rawOutput: stdout };
+    } catch (error) {
+        if (error.stdout) {
+            return { data: parseHydraOutput(error.stdout), rawOutput: error.stdout };
+        }
+        throw error;
+    }
+}
+
+function parseHydraOutput(output) {
+    const results = {
+        found: false,
+        credentials: [],
+        summary: ""
+    };
+
+    const lines = output.split('\n');
+    lines.forEach(line => {
+        // Look for successful login patterns: [22][ssh] host: 127.0.0.1   login: admin   password: password
+        const match = line.match(/login:\s+([^\s]+)\s+password:\s+([^\s]+)/);
+        if (match) {
+            results.found = true;
+            results.credentials.push({
+                user: match[1],
+                pass: match[2],
+                line: line.trim()
+            });
+        }
+        if (line.includes('1 valid password found') || line.includes('successfully completed')) {
+            results.summary = line.trim();
+        }
+    });
+
+    return results;
 }
 
 module.exports = {

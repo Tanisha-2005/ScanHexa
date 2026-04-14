@@ -569,6 +569,34 @@ function displayScanResults(scan) {
         if (el) el.innerHTML = headHtml;
     }
 
+    // Hydra Results
+    if (scan.data.hydra) {
+        let hydraHtml = '<h3>Hydra Brute-Force Results</h3>';
+        if (scan.data.hydra.error) hydraHtml += `<p class="error" style="color:#ff4757;">${scan.data.hydra.error}</p>`;
+        else {
+            const data = scan.data.hydra.data || {};
+            if (data.found) {
+                hydraHtml += `<div class="t-danger" style="margin-bottom:15px; font-weight:bold;"><i class="fas fa-exclamation-circle"></i> VULNERABLE: Valid Credentials Found!</div>`;
+                hydraHtml += `<div class="vuln-cards" style="display:grid; gap:10px; margin-bottom:20px;">`;
+                (data.credentials || []).forEach(c => {
+                    hydraHtml += `
+                        <div class="vuln-card panel" style="border-left: 4px solid var(--danger); padding:15px; background:rgba(255,255,255,0.03);">
+                             <p><strong>Username:</strong> <span class="t-ok">${c.user}</span></p>
+                             <p><strong>Password:</strong> <span class="t-ok">${c.pass}</span></p>
+                             <p style="font-size:11px; color:var(--text-muted); margin:0;">${c.line}</p>
+                        </div>
+                    `;
+                });
+                hydraHtml += `</div>`;
+            } else {
+                hydraHtml += `<p class="t-ok"><i class="fas fa-check-circle"></i> No valid credentials found during brute-force attempt.</p>`;
+            }
+            hydraHtml += `<div class="raw-output-header">Raw Console Output</div><pre class="terminal-box">${scan.data.hydra.rawOutput || 'No output Data'}</pre>`;
+        }
+        const el = document.getElementById("hydra-result");
+        if (el) el.innerHTML = hydraHtml;
+    }
+
     // Switch to Overview
     showResultTab('overview');
 }
@@ -798,12 +826,16 @@ async function runSingleTool(toolName) {
         'sqlmap': 'sqlmap-level',
         'openvas': 'openvas-scan',
         'grim': 'grim-type',
-        'theharvester': 'harvester-source'
+        'theharvester': 'harvester-source',
+        'hydra': 'hydra-protocol'
     };
     
     if (typeIds[toolName]) {
         const sel = document.getElementById(typeIds[toolName]);
-        if (sel) extraOptions.profile = sel.value;
+        if (sel) {
+            if (toolName === 'hydra') extraOptions.protocol = sel.value;
+            else extraOptions.profile = sel.value;
+        }
     }
 
     toolTerminalLog(`Running ${toolName} on ${target}...`);
