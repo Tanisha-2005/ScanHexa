@@ -419,16 +419,6 @@
                                             </div>
                                         </label>
                                     </div>
-                                    <div class="tool-option" data-tool="hydra">
-                                        <label class="cyber-check-box">
-                                            <input type="checkbox" name="tools" value="hydra">
-                                            <span class="cb-box"></span>
-                                            <div class="cb-info">
-                                                <span class="cb-name"><i class="fas fa-key"></i> Hydra</span>
-                                                <span class="cb-desc">Login Brute-Force Tool</span>
-                                            </div>
-                                        </label>
-                                    </div>
                                 </div>           </div>
                             </div>
 
@@ -560,9 +550,6 @@
                         <button class="rtab" onclick="showResultTab('shodan')">
                             <i class="fas fa-eye"></i> Shodan
                         </button>
-                        <button class="rtab" onclick="showResultTab('hydra')">
-                            <i class="fas fa-key"></i> Hydra
-                        </button>
                     </div>
 
                     <!-- Result Content -->
@@ -637,9 +624,6 @@
                         </div>
                         <div id="tab-shodan" class="result-tab hidden">
                             <div class="tool-result" id="shodan-result"></div>
-                        </div>
-                        <div id="tab-hydra" class="result-tab hidden">
-                            <div class="tool-result" id="hydra-result"></div>
                         </div>
                     </div>
 
@@ -1210,37 +1194,6 @@
                     </div>
                 </div>
 
-                <!-- Hydra Card -->
-                <div class="tool-card" data-tool="hydra">
-                    <div class="tool-card-header danger">
-                        <i class="fas fa-key" style="color: #ff3366;"></i>
-                        <h3>Hydra</h3>
-                        <span class="tool-status active">ACTIVE</span>
-                    </div>
-                    <div class="tool-card-body">
-                        <p>Fast and flexible network login brute-forcer. Supports 50+ protocols including SSH, FTP, HTTP-GET, and Telnet.</p>
-                        <div class="tool-features">
-                            <span class="feature-tag">Brute Force</span>
-                            <span class="feature-tag">Password Crack</span>
-                            <span class="feature-tag">Login Recon</span>
-                        </div>
-                        <div class="tool-input-area">
-                            <input type="text" class="cyber-input full" id="hydra-target" placeholder="Target IP or Domain">
-                            <select class="cyber-select" id="hydra-protocol">
-                                <option value="ssh">SSH Brute Force</option>
-                                <option value="ftp">FTP Login</option>
-                                <option value="http-get">HTTP-GET Auth</option>
-                            </select>
-                            <button class="cyber-btn primary" onclick="runSingleTool('hydra')">
-                                <i class="fas fa-play"></i> Run Hydra
-                            </button>
-                        </div>
-                        <div class="tool-recent-history" id="hydra-history">
-                            <h4 class="history-title">RECENT SCANS</h4>
-                            <div class="history-items"></div>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <!-- Tool Output Terminal -->
@@ -1345,7 +1298,6 @@
                         <div class="a-t-item" onclick="showToolDescription('dirsearch', this)"><i class="fas fa-folder-open"></i> Dirsearch</div>
                         <div class="a-t-item" onclick="showToolDescription('headers', this)"><i class="fas fa-code"></i> Headers</div>
                         <div class="a-t-item" onclick="showToolDescription('httpx', this)"><i class="fas fa-globe"></i> Httpx</div>
-                        <div class="a-t-item" onclick="showToolDescription('hydra', this)"><i class="fas fa-key"></i> Hydra</div>
                     </div>
                     <div id="tool-description-box" class="tool-description-box">
                         <span class="close-desc" onclick="hideToolDescription()"><i class="fas fa-times"></i></span>
@@ -1373,8 +1325,7 @@
                             'sublist3r': { name: 'Sublist3r', icon: 'fa-sitemap', desc: 'Highly efficient subdomain discovery tool. Aggregates results from search engines, DNS historical records, and brute-force modules to find hidden subdomains.' },
                             'dirsearch': { name: 'Dirsearch', icon: 'fa-folder-open', desc: 'Advanced web path brute-forcer. Rapidly identifies hidden directories, administrative panels, and sensitive files (.git, .env, backups) using curated wordlists.' },
                             'headers': { name: 'Security Headers', icon: 'fa-code', desc: 'HTTP header security auditor. Analyzes Content Security Policy (CSP), HSTS, and X-Frame-Options to ensure the application is hardened against XSS and Clickjacking.' },
-                            'httpx': { name: 'Httpx', icon: 'fa-globe', desc: 'Modern HTTP toolkit for bulk probing. Validates alive domains, retrieves status codes, page titles, and content lengths to filter large datasets into actionable targets.' },
-                            'hydra': { name: 'Hydra', icon: 'fa-key', desc: 'Powerful login brute-force tool. Supports a vast range of protocols (SSH, FTP, HTTP, etc.) to identify weak credentials and unauthorized access points.' }
+                            'httpx': { name: 'Httpx', icon: 'fa-globe', desc: 'Modern HTTP toolkit for bulk probing. Validates alive domains, retrieves status codes, page titles, and content lengths to filter large datasets into actionable targets.' }
                         };
 
                         function showToolDescription(toolId, element) {
