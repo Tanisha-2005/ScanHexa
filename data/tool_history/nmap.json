@@ -1,1 +1,8 @@
-[]
+[
+  {
+    "id": "1776106597703",
+    "target": "example.com",
+    "timestamp": "2026-04-13T18:56:37.706Z",
+    "output": "Nmap scan report for example.com\nHost is up.\nPORT    STATE SERVICE\n22/tcp  open  ssh\n80/tcp  open  http\n443/tcp open  https"
+  }
+]

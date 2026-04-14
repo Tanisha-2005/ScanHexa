@@ -42,23 +42,25 @@ router.post('/run', async (req, res) => {
             return res.status(400).json({ error: "Tool and domain required" });
         }
 
-        const { runScan, isCommandAvailable, simulateTool } = require("../utils/scanner");
+        const { runScan, getExecutablePath, simulateTool } = require("../utils/scanner");
         
         // Check if tool is available on system
-        const available = await isCommandAvailable(tool);
+        const executable = await getExecutablePath(tool);
+        const forceSimulate = process.env.SCANHEXA_SIMULATE === 'true';
         let output;
 
-        if (available) {
-            // Run real tool using runScan logic (single tool)
-            const results = await runScan(domain, [tool], options.profile || 'standard', options);
-            output = results[tool];
+        if (executable && !forceSimulate) {
+            // Run real tool using runScan logic (single tool). We extract it from the results object.
+            const results = await runScan(domain, [tool], options);
+            output = results.data[tool]; // output is inside the results.data wrapper
         } else {
             // Fallback to enhanced simulation
-            console.log(`Tool ${tool} not found, using simulation.`);
+            if (forceSimulate) console.log(`[ScanHexa] Global simulation mode active. Simulating single tool: ${tool}.`);
+            else console.log(`Tool ${tool} not found, using simulation fallback.`);
             output = await simulateTool(tool, domain, options || {});
         }
 
-        if (output.error) {
+        if (output && output.error) {
              return res.status(500).json({ error: output.error });
         }
 

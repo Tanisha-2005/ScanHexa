@@ -1,0 +1,8 @@
+[
+  {
+    "id": "1776106686455",
+    "target": "blinkit.com",
+    "timestamp": "2026-04-13T18:58:06.455Z",
+    "output": "*******************************************************************\n*  TheHarvester 4.0.3                                             *\n*******************************************************************\n[*] Searching for emails...\n[+] hr@blinkit.com\n[+] admin@blinkit.com\n[+] support@blinkit.com\n[*] Searching for hosts...\n[+] beta.blinkit.com\n[+] api-dev.blinkit.com"
+  }
+]

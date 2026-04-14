@@ -1,0 +1,8 @@
+[
+  {
+    "id": "1776104203018",
+    "target": "https://example,com",
+    "timestamp": "2026-04-13T18:16:43.021Z",
+    "output": "[exposed-git] [high] https://www.https://example,com/.git/\n[missing-security-headers] [info] https://www.https://example,com\n[cve-2021-41773] [critical] http://www.https://example,com/cgi-bin/.%2e/.%2e/.%2e/.%2e/etc/passwd"
+  }
+]

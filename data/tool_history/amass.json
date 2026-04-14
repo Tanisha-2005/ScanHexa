@@ -1,0 +1,14 @@
+[
+  {
+    "id": "1776105469210",
+    "target": "example.com",
+    "timestamp": "2026-04-13T18:37:49.211Z",
+    "output": "[OWASP Amass Simulation]\n[Found] www.example.com (192.168.1.10) [DNS]\n[Found] admin.example.com (192.168.1.15) [Brute]\n[Found] api.v1.example.com (10.0.0.50) [Cert]\n[Found] dev-vault.example.com (172.16.0.4) [Active]\n[Found] mail.example.com (192.168.1.12) [Passive]"
+  },
+  {
+    "id": "1776102015280",
+    "target": "example.com",
+    "timestamp": "2026-04-13T17:40:15.280Z",
+    "output": "[OWASP Amass Simulation]\n[Found] www.example.com (192.168.1.10) [DNS]\n[Found] admin.example.com (192.168.1.15) [Brute]\n[Found] api.v1.example.com (10.0.0.50) [Cert]\n[Found] dev-vault.example.com (172.16.0.4) [Active]\n[Found] mail.example.com (192.168.1.12) [Passive]"
+  }
+]

@@ -18,9 +18,10 @@ function calculateRiskAssessment(scanData) {
 
     // Nmap results
     if (scanData.nmap && !scanData.nmap.error) {
-        const openPorts = scanData.nmap.openPorts || [];
+        const nmapData = scanData.nmap.data || {};
+        const openPorts = nmapData.openPorts || [];
         const dangerousPorts = [21, 23, 3389, 445, 6379, 27017, 1433, 5900];
-        const dangerousOpen = openPorts.filter(p => dangerousPorts.includes(parseInt(p.port))).length;
+        const dangerousOpen = openPorts.filter(p => p && dangerousPorts.includes(parseInt(p.port))).length;
 
         score += openPorts.length * 2;
         score += dangerousOpen * 15;
@@ -29,7 +30,8 @@ function calculateRiskAssessment(scanData) {
 
     // Nikto results
     if (scanData.nikto && !scanData.nikto.error) {
-        const findings = scanData.nikto.vulnerabilities || [];
+        const niktoData = scanData.nikto.data || {};
+        const findings = niktoData.vulnerabilities || [];
         score += findings.length * 5;
         if (findings.length > 10) highCount++;
         else if (findings.length > 5) mediumCount++;
@@ -50,7 +52,7 @@ function calculateRiskAssessment(scanData) {
     let level = 'low';
     if (score >= 80 || criticalCount > 0) level = 'critical';
     else if (score >= 60 || highCount > 0) level = 'high';
-    else if (score >= 30 || mediumCount > 0) level = 'medium';
+    else if (score >= 25 || mediumCount > 0) level = 'medium';
 
     return { level, score };
 }
@@ -72,17 +74,18 @@ router.post("/start", async(req, res) => {
             });
         }
 
-        const result = await runScan(target, tools, profile, options);
+        const combinedOptions = { ...options, profile };
+        const result = await runScan(target, tools, combinedOptions);
 
         // Calculate risk assessment based on results
-        const riskAssessment = calculateRiskAssessment(result);
+        const riskAssessment = calculateRiskAssessment(result.data);
 
         const scanId = Date.now().toString();
         const responseData = {
             success: true,
             target,
             id: scanId,
-            data: result,
+            data: result.data,
             riskAssessment,
             timestamp: new Date().toISOString()
         };

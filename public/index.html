@@ -228,7 +228,7 @@
                                 <label class="config-label">
                                     <i class="fas fa-tools"></i> SELECT TOOLS
                                 </label>
-                                <div class="tool-checkboxes">
+                                <div class="tool-checkboxes" style="max-height: 400px; overflow-y: auto; padding-right: 10px; display: flex; flex-direction: column; gap: 12px;">
                                     <div class="tool-option" data-tool="nmap">
                                         <label class="cyber-check-box">
                                             <input type="checkbox" name="tools" value="nmap" checked>
@@ -236,6 +236,36 @@
                                             <div class="cb-info">
                                                 <span class="cb-name"><i class="fas fa-network-wired"></i> Nmap</span>
                                                 <span class="cb-desc">Port & Service Scanner</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="tool-option" data-tool="whois">
+                                        <label class="cyber-check-box">
+                                            <input type="checkbox" name="tools" value="whois" checked>
+                                            <span class="cb-box"></span>
+                                            <div class="cb-info">
+                                                <span class="cb-name"><i class="fas fa-id-card"></i> WHOIS</span>
+                                                <span class="cb-desc">Domain Info & Registration</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="tool-option" data-tool="dns">
+                                        <label class="cyber-check-box">
+                                            <input type="checkbox" name="tools" value="dns" checked>
+                                            <span class="cb-box"></span>
+                                            <div class="cb-info">
+                                                <span class="cb-name"><i class="fas fa-sitemap"></i> DNS</span>
+                                                <span class="cb-desc">DNS Enumeration Analyzer</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="tool-option" data-tool="ssl">
+                                        <label class="cyber-check-box">
+                                            <input type="checkbox" name="tools" value="ssl" checked>
+                                            <span class="cb-box"></span>
+                                            <div class="cb-info">
+                                                <span class="cb-name"><i class="fas fa-lock"></i> SSL/TLS</span>
+                                                <span class="cb-desc">Certificate Security Check</span>
                                             </div>
                                         </label>
                                     </div>
@@ -269,6 +299,46 @@
                                             </div>
                                         </label>
                                     </div>
+                                    <div class="tool-option" data-tool="nuclei">
+                                        <label class="cyber-check-box">
+                                            <input type="checkbox" name="tools" value="nuclei">
+                                            <span class="cb-box"></span>
+                                            <div class="cb-info">
+                                                <span class="cb-name"><i class="fas fa-bolt"></i> Nuclei</span>
+                                                <span class="cb-desc">Template-Based Fuzzer</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="tool-option" data-tool="theharvester">
+                                        <label class="cyber-check-box">
+                                            <input type="checkbox" name="tools" value="theharvester" checked>
+                                            <span class="cb-box"></span>
+                                            <div class="cb-info">
+                                                <span class="cb-name"><i class="fas fa-seedling"></i> Harvester</span>
+                                                <span class="cb-desc">Email & Threat Intelligence</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="tool-option" data-tool="amass">
+                                        <label class="cyber-check-box">
+                                            <input type="checkbox" name="tools" value="amass">
+                                            <span class="cb-box"></span>
+                                            <div class="cb-info">
+                                                <span class="cb-name"><i class="fas fa-project-diagram"></i> Amass</span>
+                                                <span class="cb-desc">Asset Discovery Engine</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="tool-option" data-tool="sherlock">
+                                        <label class="cyber-check-box">
+                                            <input type="checkbox" name="tools" value="sherlock">
+                                            <span class="cb-box"></span>
+                                            <div class="cb-info">
+                                                <span class="cb-name"><i class="fas fa-search-plus"></i> Sherlock</span>
+                                                <span class="cb-desc">Social Media Identity Search</span>
+                                            </div>
+                                        </label>
+                                    </div>
                                     <div class="tool-option" data-tool="grim">
                                         <label class="cyber-check-box">
                                             <input type="checkbox" name="tools" value="grim">
@@ -279,43 +349,53 @@
                                             </div>
                                         </label>
                                     </div>
-                                    <div class="tool-option" data-tool="theharvester">
+                                    <div class="tool-option" data-tool="shodan">
                                         <label class="cyber-check-box">
-                                            <input type="checkbox" name="tools" value="theharvester" checked>
+                                            <input type="checkbox" name="tools" value="shodan">
                                             <span class="cb-box"></span>
                                             <div class="cb-info">
-                                                <span class="cb-name"><i class="fas fa-seedling"></i> theHarvester</span>
-                                                <span class="cb-desc">OSINT Email & DNS Recon</span>
+                                                <span class="cb-name"><i class="fas fa-eye"></i> Shodan</span>
+                                                <span class="cb-desc">IoT & Network Search</span>
                                             </div>
                                         </label>
                                     </div>
-                                    <div class="tool-option" data-tool="whois">
+                                    <div class="tool-option" data-tool="wafw00f">
                                         <label class="cyber-check-box">
-                                            <input type="checkbox" name="tools" value="whois" checked>
+                                            <input type="checkbox" name="tools" value="wafw00f" checked>
                                             <span class="cb-box"></span>
                                             <div class="cb-info">
-                                                <span class="cb-name"><i class="fas fa-id-card"></i> WHOIS</span>
-                                                <span class="cb-desc">Domain Registration Info</span>
+                                                <span class="cb-name"><i class="fas fa-user-shield"></i> WAFW00f</span>
+                                                <span class="cb-desc">Firewall Identification</span>
                                             </div>
                                         </label>
                                     </div>
-                                    <div class="tool-option" data-tool="dns">
+                                    <div class="tool-option" data-tool="whatweb">
                                         <label class="cyber-check-box">
-                                            <input type="checkbox" name="tools" value="dns" checked>
+                                            <input type="checkbox" name="tools" value="whatweb" checked>
                                             <span class="cb-box"></span>
                                             <div class="cb-info">
-                                                <span class="cb-name"><i class="fas fa-sitemap"></i> DNS Recon</span>
-                                                <span class="cb-desc">DNS Enumeration & Records</span>
+                                                <span class="cb-name"><i class="fas fa-microchip"></i> WhatWeb</span>
+                                                <span class="cb-desc">Technology Stack Profiling</span>
                                             </div>
                                         </label>
                                     </div>
-                                    <div class="tool-option" data-tool="ssl">
+                                    <div class="tool-option" data-tool="sublist3r">
                                         <label class="cyber-check-box">
-                                            <input type="checkbox" name="tools" value="ssl" checked>
+                                            <input type="checkbox" name="tools" value="sublist3r" checked>
                                             <span class="cb-box"></span>
                                             <div class="cb-info">
-                                                <span class="cb-name"><i class="fas fa-lock"></i> SSL/TLS</span>
-                                                <span class="cb-desc">Certificate Analysis</span>
+                                                <span class="cb-name"><i class="fas fa-sitemap"></i> Sublist3r</span>
+                                                <span class="cb-desc">Subdomain Enumeration</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="tool-option" data-tool="dirsearch">
+                                        <label class="cyber-check-box">
+                                            <input type="checkbox" name="tools" value="dirsearch">
+                                            <span class="cb-box"></span>
+                                            <div class="cb-info">
+                                                <span class="cb-name"><i class="fas fa-folder-open"></i> Dirsearch</span>
+                                                <span class="cb-desc">Directory & Path Brute Forcer</span>
                                             </div>
                                         </label>
                                     </div>
@@ -324,12 +404,22 @@
                                             <input type="checkbox" name="tools" value="headers" checked>
                                             <span class="cb-box"></span>
                                             <div class="cb-info">
-                                                <span class="cb-name"><i class="fas fa-code"></i> HTTP Headers</span>
-                                                <span class="cb-desc">Security Header Analysis</span>
+                                                <span class="cb-name"><i class="fas fa-code"></i> Headers</span>
+                                                <span class="cb-desc">Security Headers Analyzer</span>
                                             </div>
                                         </label>
                                     </div>
-                                </div>
+                                    <div class="tool-option" data-tool="httpx">
+                                        <label class="cyber-check-box">
+                                            <input type="checkbox" name="tools" value="httpx">
+                                            <span class="cb-box"></span>
+                                            <div class="cb-info">
+                                                <span class="cb-name"><i class="fas fa-globe"></i> Httpx</span>
+                                                <span class="cb-desc">Live Host Validation Toolkit</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>           </div>
                             </div>
 
                             <!-- Advanced Options -->
@@ -421,6 +511,45 @@
                         <button class="rtab" onclick="showResultTab('osint')">
                             <i class="fas fa-search"></i> OSINT
                         </button>
+                        <button class="rtab" onclick="showResultTab('wafw00f')">
+                            <i class="fas fa-user-shield"></i> WAF
+                        </button>
+                        <button class="rtab" onclick="showResultTab('whatweb')">
+                            <i class="fas fa-microchip"></i> Tech
+                        </button>
+                        <button class="rtab" onclick="showResultTab('sublist3r')">
+                            <i class="fas fa-sitemap"></i> Subs
+                        </button>
+                        <button class="rtab" onclick="showResultTab('dirsearch')">
+                            <i class="fas fa-folder-open"></i> Dir
+                        </button>
+                        <button class="rtab" onclick="showResultTab('sherlock')">
+                            <i class="fas fa-search-plus"></i> Sherlock
+                        </button>
+                        <button class="rtab" onclick="showResultTab('amass')">
+                            <i class="fas fa-project-diagram"></i> Amass
+                        </button>
+                        <button class="rtab" onclick="showResultTab('httpx')">
+                            <i class="fas fa-check-circle"></i> Http
+                        </button>
+                        <button class="rtab" onclick="showResultTab('nuclei')">
+                            <i class="fas fa-bolt"></i> Nuclei
+                        </button>
+                        <button class="rtab" onclick="showResultTab('whois')">
+                            <i class="fas fa-id-card"></i> Whois
+                        </button>
+                        <button class="rtab" onclick="showResultTab('dns')">
+                            <i class="fas fa-globe"></i> DNS
+                        </button>
+                        <button class="rtab" onclick="showResultTab('ssl')">
+                            <i class="fas fa-lock"></i> SSL
+                        </button>
+                        <button class="rtab" onclick="showResultTab('headers')">
+                            <i class="fas fa-file-code"></i> Headers
+                        </button>
+                        <button class="rtab" onclick="showResultTab('shodan')">
+                            <i class="fas fa-eye"></i> Shodan
+                        </button>
                     </div>
 
                     <!-- Result Content -->
@@ -456,6 +585,45 @@
                         </div>
                         <div id="tab-osint" class="result-tab hidden">
                             <div class="tool-result" id="osint-result"></div>
+                        </div>
+                        <div id="tab-wafw00f" class="result-tab hidden">
+                            <div class="tool-result" id="wafw00f-result"></div>
+                        </div>
+                        <div id="tab-whatweb" class="result-tab hidden">
+                            <div class="tool-result" id="whatweb-result"></div>
+                        </div>
+                        <div id="tab-sublist3r" class="result-tab hidden">
+                            <div class="tool-result" id="sublist3r-result"></div>
+                        </div>
+                        <div id="tab-dirsearch" class="result-tab hidden">
+                            <div class="tool-result" id="dirsearch-result"></div>
+                        </div>
+                        <div id="tab-sherlock" class="result-tab hidden">
+                            <div class="tool-result" id="sherlock-result"></div>
+                        </div>
+                        <div id="tab-amass" class="result-tab hidden">
+                            <div class="tool-result" id="amass-result"></div>
+                        </div>
+                        <div id="tab-httpx" class="result-tab hidden">
+                            <div class="tool-result" id="httpx-result"></div>
+                        </div>
+                        <div id="tab-nuclei" class="result-tab hidden">
+                            <div class="tool-result" id="nuclei-result"></div>
+                        </div>
+                        <div id="tab-whois" class="result-tab hidden">
+                            <div class="tool-result" id="whois-result"></div>
+                        </div>
+                        <div id="tab-dns" class="result-tab hidden">
+                            <div class="tool-result" id="dns-result"></div>
+                        </div>
+                        <div id="tab-ssl" class="result-tab hidden">
+                            <div class="tool-result" id="ssl-result"></div>
+                        </div>
+                        <div id="tab-headers" class="result-tab hidden">
+                            <div class="tool-result" id="headers-result"></div>
+                        </div>
+                        <div id="tab-shodan" class="result-tab hidden">
+                            <div class="tool-result" id="shodan-result"></div>
                         </div>
                     </div>
 
@@ -782,6 +950,249 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- WAFW00f Tool Card -->
+                <div class="tool-card" data-tool="wafw00f">
+                    <div class="tool-card-header wafw00f">
+                        <i class="fas fa-user-shield"></i>
+                        <h3>WAFW00f</h3>
+                        <span class="tool-status active">ACTIVE</span>
+                    </div>
+                    <div class="tool-card-body">
+                        <p>Web Application Firewall Fingerprinting Tool. Identifies and fingerprints WAF products protecting a website.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">WAF Detection</span>
+                            <span class="feature-tag">Vendor ID</span>
+                            <span class="feature-tag">Bypass Recon</span>
+                        </div>
+                        <div class="tool-input-area">
+                            <input type="text" class="cyber-input full" id="wafw00f-target" placeholder="https://example.com">
+                            <button class="cyber-btn primary" onclick="runSingleTool('wafw00f')">
+                                <i class="fas fa-play"></i> Run WAFW00f
+                            </button>
+                        </div>
+                        <div class="tool-recent-history" id="wafw00f-history">
+                            <h4 class="history-title">RECENT SCANS</h4>
+                            <div class="history-items"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- WhatWeb Tool Card -->
+                <div class="tool-card" data-tool="whatweb">
+                    <div class="tool-card-header whatweb">
+                        <i class="fas fa-microchip"></i>
+                        <h3>WhatWeb</h3>
+                        <span class="tool-status active">ACTIVE</span>
+                    </div>
+                    <div class="tool-card-body">
+                        <p>Identify technologies used by websites. Detects CMS, blogging platforms, Javascript libraries, web servers, and more.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">Tech Stack</span>
+                            <span class="feature-tag">CMS Detector</span>
+                            <span class="feature-tag">Server Info</span>
+                        </div>
+                        <div class="tool-input-area">
+                            <input type="text" class="cyber-input full" id="whatweb-target" placeholder="https://example.com">
+                            <button class="cyber-btn primary" onclick="runSingleTool('whatweb')">
+                                <i class="fas fa-play"></i> Run WhatWeb
+                            </button>
+                        </div>
+                        <div class="tool-recent-history" id="whatweb-history">
+                            <h4 class="history-title">RECENT SCANS</h4>
+                            <div class="history-items"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sublist3r Tool Card -->
+                <div class="tool-card" data-tool="sublist3r">
+                    <div class="tool-card-header sublist3r">
+                        <i class="fas fa-sitemap"></i>
+                        <h3>Sublist3r</h3>
+                        <span class="tool-status active">ACTIVE</span>
+                    </div>
+                    <div class="tool-card-body">
+                        <p>Fast subdomain enumeration tool using OSINT. High efficiency searching across Google, Bing, Baidu, and DNSdumpster.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">Subdomains</span>
+                            <span class="feature-tag">OSINT Recon</span>
+                            <span class="feature-tag">Bulk Enum</span>
+                        </div>
+                        <div class="tool-input-area">
+                            <input type="text" class="cyber-input full" id="sublist3r-target" placeholder="example.com">
+                            <button class="cyber-btn primary" onclick="runSingleTool('sublist3r')">
+                                <i class="fas fa-play"></i> Run Sublist3r
+                            </button>
+                        </div>
+                        <div class="tool-recent-history" id="sublist3r-history">
+                            <h4 class="history-title">RECENT SCANS</h4>
+                            <div class="history-items"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dirsearch Tool Card -->
+                <div class="tool-card" data-tool="dirsearch">
+                    <div class="tool-card-header dirsearch">
+                        <i class="fas fa-folder-open"></i>
+                        <h3>Dirsearch</h3>
+                        <span class="tool-status active">ACTIVE</span>
+                    </div>
+                    <div class="tool-card-body">
+                        <p>Web path scanner. Bruteforces directories and files on webservers to find hidden content and sensitive files.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">Brute Force</span>
+                            <span class="feature-tag">Path Discovery</span>
+                            <span class="feature-tag">Hidden Files</span>
+                        </div>
+                        <div class="tool-input-area">
+                            <input type="text" class="cyber-input full" id="dirsearch-target" placeholder="https://example.com">
+                            <button class="cyber-btn primary" onclick="runSingleTool('dirsearch')">
+                                <i class="fas fa-play"></i> Run Dirsearch
+                            </button>
+                        </div>
+                        <div class="tool-recent-history" id="dirsearch-history">
+                            <h4 class="history-title">RECENT SCANS</h4>
+                            <div class="history-items"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sherlock Tool Card -->
+                <div class="tool-card" data-tool="sherlock">
+                    <div class="tool-card-header sherlock">
+                        <i class="fas fa-search-plus"></i>
+                        <h3>Sherlock</h3>
+                        <span class="tool-status active">ACTIVE</span>
+                    </div>
+                    <div class="tool-card-body">
+                        <p>Social media hunt. Sherlock finds social media accounts by username across 300+ platforms including Twitter, GitHub, and Instagram.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">Account Hunting</span>
+                            <span class="feature-tag">Username OSINT</span>
+                            <span class="feature-tag">Social Recon</span>
+                        </div>
+                        <div class="tool-input-area">
+                            <input type="text" class="cyber-input full" id="sherlock-target" placeholder="Enter username (e.g., johndoe)">
+                            <button class="cyber-btn primary" onclick="runSingleTool('sherlock')">
+                                <i class="fas fa-play"></i> Run Sherlock
+                            </button>
+                        </div>
+                        <div class="tool-recent-history" id="sherlock-history">
+                            <h4 class="history-title">RECENT SCANS</h4>
+                            <div class="history-items"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Amass Tool Card -->
+                <div class="tool-card" data-tool="amass">
+                    <div class="tool-card-header amass">
+                        <i class="fas fa-project-diagram"></i>
+                        <h3>OWASP Amass</h3>
+                        <span class="tool-status active">ACTIVE</span>
+                    </div>
+                    <div class="tool-card-body">
+                        <p>In-depth DNS enumeration and network mapping. Amass helps discover a target's attack surface using active and passive techniques.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">DNS Enum</span>
+                            <span class="feature-tag">Attack Surface</span>
+                            <span class="feature-tag">AS Tracking</span>
+                        </div>
+                        <div class="tool-input-area">
+                            <input type="text" class="cyber-input full" id="amass-target" placeholder="example.com">
+                            <button class="cyber-btn primary" onclick="runSingleTool('amass')">
+                                <i class="fas fa-play"></i> Run Amass
+                            </button>
+                        </div>
+                        <div class="tool-recent-history" id="amass-history">
+                            <h4 class="history-title">RECENT SCANS</h4>
+                            <div class="history-items"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Httpx Tool Card -->
+                <div class="tool-card" data-tool="httpx">
+                    <div class="tool-card-header httpx">
+                        <i class="fas fa-globe"></i>
+                        <h3>Httpx</h3>
+                        <span class="tool-status active">ACTIVE</span>
+                    </div>
+                    <div class="tool-card-body">
+                        <p>Fast and multi-purpose HTTP toolkit. Probe for alive domains, title, status codes, and server technologies in bulk.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">HTTP Probing</span>
+                            <span class="feature-tag">Tech Detect</span>
+                            <span class="feature-tag">Status Codes</span>
+                        </div>
+                        <div class="tool-input-area">
+                            <input type="text" class="cyber-input full" id="httpx-target" placeholder="https://example.com">
+                            <button class="cyber-btn primary" onclick="runSingleTool('httpx')">
+                                <i class="fas fa-play"></i> Run Httpx
+                            </button>
+                        </div>
+                        <div class="tool-recent-history" id="httpx-history">
+                            <h4 class="history-title">RECENT SCANS</h4>
+                            <div class="history-items"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nuclei Tool Card -->
+                <div class="tool-card" data-tool="nuclei">
+                    <div class="tool-card-header nuclei">
+                        <i class="fas fa-bolt"></i>
+                        <h3>Nuclei</h3>
+                        <span class="tool-status active">ACTIVE</span>
+                    </div>
+                    <div class="tool-card-body">
+                        <p>Modern template-based vulnerability scanner. Scan for misconfigurations, leaked files, and known vulnerabilities with lightning speed.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">Vulnerability Scan</span>
+                            <span class="feature-tag">Custom Templates</span>
+                            <span class="feature-tag">CVE Checking</span>
+                        </div>
+                        <div class="tool-input-area">
+                            <input type="text" class="cyber-input full" id="nuclei-target" placeholder="https://target.com">
+                            <button class="cyber-btn primary" onclick="runSingleTool('nuclei')">
+                                <i class="fas fa-play"></i> Run Nuclei
+                            </button>
+                        </div>
+                        <div class="tool-recent-history" id="nuclei-history">
+                            <h4 class="history-title">RECENT SCANS</h4>
+                            <div class="history-items"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shodan Card -->
+                <div class="tool-card" data-tool="shodan">
+                    <div class="tool-card-header shodan">
+                        <i class="fas fa-eye"></i>
+                        <h3>Shodan CLI</h3>
+                        <span class="tool-status active">ACTIVE</span>
+                    </div>
+                    <div class="tool-card-body">
+                        <p>The IoT search engine. Query Shodan database for IP info, open ports, and device vulnerabilities without direct interaction.</p>
+                        <div class="tool-features">
+                            <span class="feature-tag">IoT Search</span>
+                            <span class="feature-tag">Port Check</span>
+                            <span class="feature-tag">Passive Intel</span>
+                        </div>
+                        <div class="tool-input-area">
+                            <input type="text" class="cyber-input full" id="shodan-target" placeholder="8.8.8.8">
+                            <button class="cyber-btn primary" onclick="runSingleTool('shodan')">
+                                <i class="fas fa-play"></i> Query Shodan
+                            </button>
+                        </div>
+                        <div class="tool-recent-history" id="shodan-history">
+                            <h4 class="history-title">RECENT SCANS</h4>
+                            <div class="history-items"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Tool Output Terminal -->
@@ -823,12 +1234,12 @@
                     </p>
                     <div class="about-stats-mini">
                         <div class="a-mini-stat">
-                            <span class="a-m-val">10+</span>
+                            <span class="a-m-val">15+</span>
                             <span class="a-m-lbl">TOOLS</span>
                         </div>
                         <div class="a-mini-stat">
-                            <span class="a-m-val">100%</span>
-                            <span class="a-m-lbl">OPEN SOURCE</span>
+                            <span class="a-m-val">HIGH-FI</span>
+                            <span class="a-m-lbl">SIMULATION</span>
                         </div>
                         <div class="a-mini-stat">
                             <span class="a-m-val">LIVE</span>
@@ -866,40 +1277,82 @@
                     <div class="panel-header">
                         <h2><i class="fas fa-project-diagram"></i> Integrated Intelligence Modules</h2>
                     </div>
-                    <div class="tools-list-horizontal">
-                        <div class="h-tool-item" title="Network Mapper">
-                            <i class="fas fa-network-wired"></i>
-                            <span>Nmap</span>
-                        </div>
-                        <div class="h-tool-item" title="Web Scanner">
-                            <i class="fas fa-globe"></i>
-                            <span>Nikto</span>
-                        </div>
-                        <div class="h-tool-item" title="IP Intel">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>IPinfo</span>
-                        </div>
-                        <div class="h-tool-item" title="Security Headers">
-                            <i class="fas fa-file-code"></i>
-                            <span>Headers</span>
-                        </div>
-                        <div class="h-tool-item" title="SQL Injection">
-                            <i class="fas fa-database"></i>
-                            <span>SQLMap</span>
-                        </div>
-                        <div class="h-tool-item" title="Vulnerability Sys">
-                            <i class="fas fa-shield-alt"></i>
-                            <span>OpenVAS</span>
-                        </div>
-                        <div class="h-tool-item" title="OSINT Engine">
-                            <i class="fas fa-seedling"></i>
-                            <span>OSINT</span>
-                        </div>
-                        <div class="h-tool-item" title="Social Recon">
-                            <i class="fas fa-ghost"></i>
-                            <span>Grim</span>
-                        </div>
+                    <div class="about-tools-grid-flat" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-top: 15px;">
+                        <div class="a-t-item" onclick="showToolDescription('nmap', this)"><i class="fas fa-network-wired"></i> Nmap</div>
+                        <div class="a-t-item" onclick="showToolDescription('whois', this)"><i class="fas fa-id-card"></i> WHOIS</div>
+                        <div class="a-t-item" onclick="showToolDescription('dns', this)"><i class="fas fa-sitemap"></i> DNS</div>
+                        <div class="a-t-item" onclick="showToolDescription('ssl', this)"><i class="fas fa-lock"></i> SSL/TLS</div>
+                        <div class="a-t-item" onclick="showToolDescription('nikto', this)"><i class="fas fa-globe"></i> Nikto</div>
+                        <div class="a-t-item" onclick="showToolDescription('sqlmap', this)"><i class="fas fa-database"></i> SQLMap</div>
+                        <div class="a-t-item" onclick="showToolDescription('openvas', this)"><i class="fas fa-shield-alt"></i> OpenVAS</div>
+                        <div class="a-t-item" onclick="showToolDescription('nuclei', this)"><i class="fas fa-bolt"></i> Nuclei</div>
+                        <div class="a-t-item" onclick="showToolDescription('theharvester', this)"><i class="fas fa-seedling"></i> theHarvester</div>
+                        <div class="a-t-item" onclick="showToolDescription('amass', this)"><i class="fas fa-project-diagram"></i> Amass</div>
+                        <div class="a-t-item" onclick="showToolDescription('sherlock', this)"><i class="fas fa-search-plus"></i> Sherlock</div>
+                        <div class="a-t-item" onclick="showToolDescription('grim', this)"><i class="fas fa-ghost"></i> Grim</div>
+                        <div class="a-t-item" onclick="showToolDescription('shodan', this)"><i class="fas fa-eye"></i> Shodan</div>
+                        <div class="a-t-item" onclick="showToolDescription('wafw00f', this)"><i class="fas fa-user-shield"></i> WAFW00f</div>
+                        <div class="a-t-item" onclick="showToolDescription('whatweb', this)"><i class="fas fa-microchip"></i> WhatWeb</div>
+                        <div class="a-t-item" onclick="showToolDescription('sublist3r', this)"><i class="fas fa-sitemap"></i> Sublist3r</div>
+                        <div class="a-t-item" onclick="showToolDescription('dirsearch', this)"><i class="fas fa-folder-open"></i> Dirsearch</div>
+                        <div class="a-t-item" onclick="showToolDescription('headers', this)"><i class="fas fa-code"></i> Headers</div>
+                        <div class="a-t-item" onclick="showToolDescription('httpx', this)"><i class="fas fa-globe"></i> Httpx</div>
                     </div>
+                    <div id="tool-description-box" class="tool-description-box">
+                        <span class="close-desc" onclick="hideToolDescription()"><i class="fas fa-times"></i></span>
+                        <h4 id="tool-desc-name"></h4>
+                        <p id="tool-desc-text"></p>
+                    </div>
+
+                    <script>
+                        const toolDescriptions = {
+                            'nmap': { name: 'Nmap', icon: 'fa-network-wired', desc: 'Network Mapper - The industry standard for port scanning and network discovery. Detects open ports, services, OS fingerprinting, and vulnerabilities using NSE scripts.' },
+                            'whois': { name: 'WHOIS', icon: 'fa-id-card', desc: 'Domain information utility. Retrieves registration details, owner information, and expiration dates for domains and IP address allocations.' },
+                            'dns': { name: 'DNS Enumeration', icon: 'fa-sitemap', desc: 'Comprehensive DNS analysis tool. Identifies subdomains, MX records, TXT records (SPF/DKIM), and potential zone transfers to map organizational infrastructure.' },
+                            'ssl': { name: 'SSL/TLS Checker', icon: 'fa-lock', desc: 'Probes SSL/TLS configurations. Verifies certificate validity, cipher suites, protocol versions (TLS 1.2/1.3), and identifies vulnerabilities like Heartbleed or expired certs.' },
+                            'nikto': { name: 'Nikto', icon: 'fa-globe', desc: 'Open source web server scanner. Performs comprehensive tests against web servers for multiple items, including over 6700 potentially dangerous files/programs and outdated software.' },
+                            'sqlmap': { name: 'SQLMap', icon: 'fa-database', desc: 'Automated SQL injection and database takeover tool. Detects and exploits SQL injection flaws and takes over database servers with a powerful detection engine.' },
+                            'openvas': { name: 'OpenVAS', icon: 'fa-shield-alt', desc: 'Open Vulnerability Assessment System. A full-featured vulnerability scanner with 50,000+ tests (NVTs) for detecting security issues across networks and systems.' },
+                            'nuclei': { name: 'Nuclei', icon: 'fa-bolt', desc: 'Fast and customizable template-based vulnerability scanner. Used to send requests across targets based on a template, allowing zero-day scanning and specialized security checks.' },
+                            'theharvester': { name: 'theHarvester', icon: 'fa-seedling', desc: 'OSINT tool for gathering emails, subdomains, hosts, employee names, open ports and banners from different public sources like search engines and PGP key servers.' },
+                            'amass': { name: 'OWASP Amass', icon: 'fa-project-diagram', desc: 'In-depth DNS enumeration, attack surface mapping and external asset discovery. Uses active and passive techniques to find domains and IP addresses belonging to a target.' },
+                            'sherlock': { name: 'Sherlock', icon: 'fa-search-plus', desc: 'Social media forensic tool. Hunts for social media accounts by username across 300+ platforms including Twitter/X, GitHub, Instagram, and specialized security forums.' },
+                            'grim': { name: 'Grim', icon: 'fa-ghost', desc: 'Digital footprint and user intelligence gathering tool. Collects social profile data and connection patterns for deep target profiling in red-teaming operations.' },
+                            'shodan': { name: 'Shodan CLI', icon: 'fa-eye', desc: 'Passive reconnaissance interface for the Shodan IoT search engine. Retrieves port data, service banners, and known vulnerabilities without ever touching the target directly.' },
+                            'wafw00f': { name: 'WAFW00f', icon: 'fa-user-shield', desc: 'Web Application Firewall fingerprinting tool. Sends specific payloads to detect and identify the type of firewall protecting a target application (e.g., Cloudflare, Akamai).' },
+                            'whatweb': { name: 'WhatWeb', icon: 'fa-microchip', desc: 'Web technology stack profiler. Identifies CMS (WordPress, Joomla), blogging platforms, JavaScript libraries, web servers, and operating systems from response headers.' },
+                            'sublist3r': { name: 'Sublist3r', icon: 'fa-sitemap', desc: 'Highly efficient subdomain discovery tool. Aggregates results from search engines, DNS historical records, and brute-force modules to find hidden subdomains.' },
+                            'dirsearch': { name: 'Dirsearch', icon: 'fa-folder-open', desc: 'Advanced web path brute-forcer. Rapidly identifies hidden directories, administrative panels, and sensitive files (.git, .env, backups) using curated wordlists.' },
+                            'headers': { name: 'Security Headers', icon: 'fa-code', desc: 'HTTP header security auditor. Analyzes Content Security Policy (CSP), HSTS, and X-Frame-Options to ensure the application is hardened against XSS and Clickjacking.' },
+                            'httpx': { name: 'Httpx', icon: 'fa-globe', desc: 'Modern HTTP toolkit for bulk probing. Validates alive domains, retrieves status codes, page titles, and content lengths to filter large datasets into actionable targets.' }
+                        };
+
+                        function showToolDescription(toolId, element) {
+                            const data = toolDescriptions[toolId];
+                            const descBox = document.getElementById('tool-description-box');
+                            const nameEl = document.getElementById('tool-desc-name');
+                            const textEl = document.getElementById('tool-desc-text');
+                            
+                            // Remove active class from all items
+                            document.querySelectorAll('.a-t-item').forEach(item => item.classList.remove('active'));
+                            
+                            // Add active class to clicked item
+                            element.classList.add('active');
+                            
+                            nameEl.innerHTML = `<i class="fas ${data.icon}"></i> ${data.name}`;
+                            textEl.textContent = data.desc;
+                            
+                            descBox.classList.add('show');
+                            descBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        }
+
+                        function hideToolDescription() {
+                            const descBox = document.getElementById('tool-description-box');
+                            descBox.classList.remove('show');
+                            document.querySelectorAll('.a-t-item').forEach(item => item.classList.remove('active'));
+                        }
+                    </script>
+
                 </div>
 
                 <div class="panel disclaimer-card">
@@ -940,7 +1393,7 @@
     <!-- Notification Toast -->
     <div id="toast-container" class="toast-container"></div>
 
-    <script src="./js/app_v13.js"></script>
+    <script src="./js/app.js"></script>
 
 </body>
 

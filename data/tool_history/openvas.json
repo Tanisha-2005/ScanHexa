@@ -1,8 +1,8 @@
 [
   {
-    "id": "1775991189441",
+    "id": "1776106644600",
     "target": "192.168.2.0",
-    "timestamp": "2026-04-12T10:53:09.441Z",
-    "output": "OpenVAS Scanner\nTarget: 192.168.2.0\nFindings:\n- [HIGH] SSL/TLS: Weak Cipher Suites (CVSS: 7.5)\n- [MEDIUM] HTTP Server Disclosure\n- [MEDIUM] Missing HSTS Header"
+    "timestamp": "2026-04-13T18:57:24.600Z",
+    "output": "Vulnerability Detection Result\n- NVT: SSL/TLS: Missing 'HTTP Strict Transport Security' (HSTS)\n- NVT: Missing 'X-Content-Type-Options' Header\n- NVT: Missing 'X-Frame-Options' Header"
   }
 ]

@@ -113,12 +113,15 @@ async function startScan(overrideTools = null) {
         // Update Metrics
         if (scanResult.riskAssessment) {
             if (scanResult.riskAssessment.level === 'critical') State.criticalVulns++;
-            if (scanResult.data.nmap && scanResult.data.nmap.openPorts) {
-                State.openPortsTotal += scanResult.data.nmap.openPorts.length;
+            const nmapResult = scanResult.data.nmap;
+            if (nmapResult && nmapResult.data && nmapResult.data.openPorts) {
+                State.openPortsTotal += nmapResult.data.openPorts.length;
             }
         }
         updateDashboardStats();
+        updateRecentScansUI();
         
+        console.log("[ScanHexa] Full scan result received:", scanResult);
         displayScanResults(scanResult);
         loadReports(); // reload to get newly saved remote report
 
@@ -159,6 +162,7 @@ function quickScan() {
 
 // =================== UI UPDATES ===================
 function displayScanResults(scan) {
+    console.log("[ScanHexa] Displaying results for:", scan.target);
     document.getElementById("scan-placeholder").style.display = "none";
     document.getElementById("tab-overview").classList.remove("hidden");
     
@@ -173,11 +177,11 @@ function displayScanResults(scan) {
         let nmapHtml = '<h3>Nmap Scan Results</h3>';
         if (scan.data.nmap.error) nmapHtml += `<p class="error" style="color:#ff4757;">${scan.data.nmap.error}</p>`;
         else {
-             nmapHtml += `<ul>`;
-             (scan.data.nmap.openPorts || []).forEach(p => {
-                 nmapHtml += `<li>Port ${p.port} (${p.protocol}): ${p.service} - ${p.state}</li>`;
+             nmapHtml += `<ul class="result-list">`;
+             (scan.data.nmap.data?.openPorts || []).forEach(p => {
+                 nmapHtml += `<li><i class="fas fa-plug"></i> <strong>Port ${p.port}</strong> (${p.protocol}): <span class="t-ok">${p.service}</span> - <span class="badge sm success">${p.state}</span></li>`;
              });
-             nmapHtml += `</ul><pre>${scan.data.nmap.rawOutput || ''}</pre>`;
+             nmapHtml += `</ul><div class="raw-output-header">Raw Console Output</div><pre class="terminal-box">${scan.data.nmap.rawOutput || ''}</pre>`;
         }
         document.getElementById("nmap-result").innerHTML = nmapHtml;
     } else {
@@ -189,11 +193,11 @@ function displayScanResults(scan) {
         let niktoHtml = '<h3>Nikto Vulnerability Results</h3>';
         if (scan.data.nikto.error) niktoHtml += `<p class="error" style="color:#ff4757;">${scan.data.nikto.error}</p>`;
         else {
-             niktoHtml += `<ul>`;
-             (scan.data.nikto.vulnerabilities || []).forEach(v => {
-                 niktoHtml += `<li>${v}</li>`;
+             niktoHtml += `<ul class="result-list">`;
+             (scan.data.nikto.data?.vulnerabilities || []).forEach(v => {
+                 niktoHtml += `<li><i class="fas fa-exclamation-triangle t-warning"></i> ${v}</li>`;
              });
-             niktoHtml += `</ul><pre>${scan.data.nikto.rawOutput || ''}</pre>`;
+             niktoHtml += `</ul><div class="raw-output-header">Raw Console Output</div><pre class="terminal-box">${scan.data.nikto.rawOutput || ''}</pre>`;
         }
         document.getElementById("nikto-result").innerHTML = niktoHtml;
     } else {
@@ -216,10 +220,28 @@ function displayScanResults(scan) {
 
     // OpenVAS
     if (scan.data.openvas) {
-        let ovHtml = '<h3>OpenVAS Assessment</h3>';
+        let ovHtml = '<h3>OpenVAS Vulnerability Assessment</h3>';
         if (scan.data.openvas.error) ovHtml += `<p class="error" style="color:#ff4757;">${scan.data.openvas.error}</p>`;
         else {
-             ovHtml += `<pre>${scan.data.openvas.rawOutput || 'No output Data'}</pre>`;
+            const findings = scan.data.openvas.data?.findings || [];
+            if (findings.length > 0) {
+                ovHtml += `<div class="vuln-cards" style="display:grid; gap:10px; margin-bottom:20px;">`;
+                findings.forEach(f => {
+                    const sevClass = f.severity.toLowerCase();
+                    ovHtml += `
+                        <div class="vuln-card panel" style="border-left: 4px solid var(--${sevClass === 'critical' ? 'danger' : (sevClass === 'high' ? 'danger' : (sevClass === 'medium' ? 'warning' : 'info'))}); padding:15px; background:rgba(255,255,255,0.03);">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                <h4 style="margin:0; color:var(--text-primary);">${f.name}</h4>
+                                <span class="badge ${sevClass}">${f.severity.toUpperCase()}</span>
+                            </div>
+                            <p style="font-size:12px; color:var(--text-secondary); margin-bottom:8px;">${f.description}</p>
+                            <p style="font-size:11px; color:var(--text-muted); margin:0;"><i class="fas fa-shield-alt"></i> Impact: ${f.impact}</p>
+                        </div>
+                    `;
+                });
+                ovHtml += `</div>`;
+            }
+            ovHtml += `<div class="raw-output-header">Raw Console Output</div><pre class="terminal-box">${scan.data.openvas.rawOutput || 'No output Data'}</pre>`;
         }
         const el = document.getElementById("openvas-result");
         if(el) el.innerHTML = ovHtml;
@@ -254,6 +276,297 @@ function displayScanResults(scan) {
     } else {
         const el = document.getElementById("osint-result");
         if (el) el.innerHTML = '<p class="t-warning" style="padding:20px;">OSINT tools were not selected for this scan.</p>';
+    }
+
+    // WAFW00f
+    if (scan.data.wafw00f) {
+        let wafHtml = '<h3>WAF Detection Results</h3>';
+        if (scan.data.wafw00f.error) wafHtml += `<p class="error" style="color:#ff4757;">${scan.data.wafw00f.error}</p>`;
+        else {
+            const detected = scan.data.wafw00f.data?.detected;
+            if (detected) {
+                wafHtml += `<div class="t-ok" style="margin-bottom:15px;"><i class="fas fa-shield-alt"></i> Firewall Detected: <span class="badge success">${scan.data.wafw00f.data.waf}</span></div>`;
+            } else {
+                wafHtml += `<p class="t-info"><i class="fas fa-unlock"></i> No Web Application Firewall detected.</p>`;
+            }
+            wafHtml += `<div class="raw-output-header">Raw Console Output</div><pre class="terminal-box">${scan.data.wafw00f.rawOutput || 'No output Data'}</pre>`;
+        }
+        const el = document.getElementById("wafw00f-result");
+        if (el) el.innerHTML = wafHtml;
+    }
+
+    // WhatWeb
+    if (scan.data.whatweb) {
+        let whatHtml = '<h3>Tech Stack Analysis</h3>';
+        if (scan.data.whatweb.error) whatHtml += `<p class="error" style="color:#ff4757;">${scan.data.whatweb.error}</p>`;
+        else {
+            const techs = scan.data.whatweb.data?.tech || [];
+            if (techs.length > 0) {
+                whatHtml += `<div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:15px;">`;
+                techs.forEach(t => {
+                    whatHtml += `<span class="badge info">${t}</span>`;
+                });
+                whatHtml += `</div>`;
+            }
+            whatHtml += `<div class="raw-output-header">Raw Console Output</div><pre class="terminal-box">${scan.data.whatweb.rawOutput || 'No output Data'}</pre>`;
+        }
+        const el = document.getElementById("whatweb-result");
+        if (el) el.innerHTML = whatHtml;
+    }
+
+    // Sublist3r
+    if (scan.data.sublist3r) {
+        let subHtml = '<h3>Subdomain Enumeration</h3>';
+        if (scan.data.sublist3r.error) subHtml += `<p class="error" style="color:#ff4757;">${scan.data.sublist3r.error}</p>`;
+        else {
+            const domains = scan.data.sublist3r.data?.domains || [];
+            if (domains.length > 0) {
+                subHtml += `<ul class="result-list">`;
+                domains.forEach(d => {
+                    subHtml += `<li><i class="fas fa-sitemap"></i> ${d}</li>`;
+                });
+                subHtml += `</ul>`;
+            }
+            subHtml += `<div class="raw-output-header">Raw Console Output</div><pre class="terminal-box">${scan.data.sublist3r.rawOutput || 'No output Data'}</pre>`;
+        }
+        const el = document.getElementById("sublist3r-result");
+        if (el) el.innerHTML = subHtml;
+    }
+
+    // Dirsearch
+    if (scan.data.dirsearch) {
+        let dirHtml = '<h3>Directory Brute Force Results</h3>';
+        if (scan.data.dirsearch.error) dirHtml += `<p class="error" style="color:#ff4757;">${scan.data.dirsearch.error}</p>`;
+        else {
+            const paths = scan.data.dirsearch.data?.paths || [];
+            if (paths.length > 0) {
+                dirHtml += `<ul class="result-list">`;
+                paths.forEach(p => {
+                    dirHtml += `<li><i class="fas fa-folder"></i> <strong>${p}</strong> - <span class="badge sm success">FOUND</span></li>`;
+                });
+                dirHtml += `</ul>`;
+            }
+            dirHtml += `<div class="raw-output-header">Raw Console Output</div><pre class="terminal-box">${scan.data.dirsearch.rawOutput || 'No output Data'}</pre>`;
+        }
+        const el = document.getElementById("dirsearch-result");
+        if (el) el.innerHTML = dirHtml;
+    }
+
+    // Sherlock
+    if (scan.data.sherlock) {
+        let sherlockHtml = '<h3>Sherlock Account Search Results</h3>';
+        if (scan.data.sherlock.error) sherlockHtml += `<p class="error" style="color:#ff4757;">${scan.data.sherlock.error}</p>`;
+        else {
+            const results = scan.data.sherlock.data?.results || [];
+            if (results.length > 0) {
+                sherlockHtml += `<p class="t-ok" style="margin-bottom:15px;">Target found on ${results.length} platforms:</p>`;
+                sherlockHtml += `<div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:10px;">`;
+                results.forEach(url => {
+                    const platform = url.split('.')[1];
+                    const siteName = platform?.charAt(0).toUpperCase() + platform?.slice(1);
+                    sherlockHtml += `
+                        <a href="${url}" target="_blank" style="background:rgba(0,0,0,0.3); border:1px solid var(--border); border-radius:8px; padding:12px; text-decoration:none; display:flex; align-items:center; gap:10px; transition:0.3s; color:var(--text-primary);">
+                            <i class="fas fa-external-link-alt" style="color:#9b59b6;"></i>
+                            <div style="display:flex; flex-direction:column;">
+                                <span style="font-size:11px; color:#9b59b6; font-weight:700;">${siteName?.toUpperCase() || 'PROFILE'}</span>
+                                <span style="font-size:12px; color:var(--text-secondary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:150px;">${url}</span>
+                            </div>
+                        </a>
+                    `;
+                });
+                sherlockHtml += `</div>`;
+            } else {
+                sherlockHtml += `<p class="t-warning">No social profiles found for this username.</p>`;
+            }
+        }
+        const el = document.getElementById("sherlock-result");
+        if (el) el.innerHTML = sherlockHtml;
+    }
+
+    // Amass
+    if (scan.data.amass) {
+        let amassHtml = '<h3>Amass Discovery Results</h3>';
+        if (scan.data.amass.error) amassHtml += `<p class="error" style="color:#ff4757;">${scan.data.amass.error}</p>`;
+        else {
+            const subdomains = scan.data.amass.data?.subdomains || [];
+            if (subdomains.length > 0) {
+                amassHtml += `<ul class="result-list">`;
+                subdomains.forEach(s => {
+                    amassHtml += `<li><i class="fas fa-link"></i> <strong>${s.domain}</strong> - <span class="t-info">${s.ip}</span> <span class="badge sm">${s.source}</span></li>`;
+                });
+                amassHtml += `</ul>`;
+            }
+            amassHtml += `<div class="raw-output-header">Raw Console Output</div><pre class="terminal-box">${scan.data.amass.rawOutput || 'No output Data'}</pre>`;
+        }
+        const el = document.getElementById("amass-result");
+        if (el) el.innerHTML = amassHtml;
+    }
+
+    // Httpx
+    if (scan.data.httpx) {
+        let httpxHtml = '<h3>Httpx Probing Results</h3>';
+        if (scan.data.httpx.error) httpxHtml += `<p class="error" style="color:#ff4757;">${scan.data.httpx.error}</p>`;
+        else {
+            const results = scan.data.httpx.data?.results || [];
+            if (results.length > 0) {
+                httpxHtml += `<ul class="result-list">`;
+                results.forEach(r => {
+                    const statusClass = r.status >= 200 && r.status < 300 ? 't-ok' : (r.status >= 300 && r.status < 400 ? 't-info' : 't-warning');
+                    httpxHtml += `<li><i class="fas fa-globe"></i> <a href="${r.url}" target="_blank">${r.url}</a> [<span class="${statusClass}">${r.status}</span>] <strong>${r.title}</strong> - <small>${r.server}</small></li>`;
+                });
+                httpxHtml += `</ul>`;
+            }
+            httpxHtml += `<div class="raw-output-header">Raw Console Output</div><pre class="terminal-box">${scan.data.httpx.rawOutput || 'No output Data'}</pre>`;
+        }
+        const el = document.getElementById("httpx-result");
+        if (el) el.innerHTML = httpxHtml;
+    }
+
+    // Nuclei
+    if (scan.data.nuclei) {
+        let nucleiHtml = '<h3>Nuclei Vulnerability Findings</h3>';
+        if (scan.data.nuclei.error) nucleiHtml += `<p class="error" style="color:#ff4757;">${scan.data.nuclei.error}</p>`;
+        else {
+            const findings = scan.data.nuclei.data?.findings || [];
+            if (findings.length > 0) {
+                nucleiHtml += `<div class="vuln-cards" style="display:grid; gap:10px; margin-bottom:20px;">`;
+                findings.forEach(f => {
+                    const sevClass = f.severity.toLowerCase();
+                    nucleiHtml += `
+                        <div class="vuln-card panel" style="border-left: 4px solid var(--${sevClass === 'critical' ? 'danger' : (sevClass === 'high' ? 'danger' : (sevClass === 'medium' ? 'warning' : 'info'))}); padding:15px; background:rgba(255,255,255,0.03);">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                <h4 style="margin:0; color:var(--text-primary);">${f.name}</h4>
+                                <span class="badge ${sevClass}">${f.severity.toUpperCase()}</span>
+                            </div>
+                            <p style="font-size:12px; color:var(--text-secondary); margin-bottom:10px;">${f.description}</p>
+                            <div style="font-family:monospace; font-size:11px; color:#a29bfe; word-break:break-all;">${f.match}</div>
+                        </div>
+                    `;
+                });
+                nucleiHtml += `</div>`;
+            }
+            nucleiHtml += `<div class="raw-output-header">Raw Console Output</div><pre class="terminal-box">${scan.data.nuclei.rawOutput || 'No output Data'}</pre>`;
+        }
+        const el = document.getElementById("nuclei-result");
+        if (el) el.innerHTML = nucleiHtml;
+    }
+
+    // Shodan
+    if (scan.data.shodan) {
+        let shodanHtml = '<h3>Shodan Intelligence</h3>';
+        if (scan.data.shodan.error) shodanHtml += `<p class="error" style="color:#ff4757;">${scan.data.shodan.error}</p>`;
+        else {
+            const intel = scan.data.shodan.data || {};
+            if (intel.ip) {
+                shodanHtml += `
+                    <div class="intel-overview" style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px;">
+                        <div class="intel-stats panel">
+                            <p><strong>IP:</strong> ${intel.ip}</p>
+                            <p><strong>OS:</strong> ${intel.os}</p>
+                            <p><strong>ISP:</strong> ${intel.isp}</p>
+                            <p><strong>Org:</strong> ${intel.org}</p>
+                        </div>
+                        <div class="intel-ports panel">
+                            <p><strong>Open Ports:</strong></p>
+                            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
+                                ${(intel.ports || []).map(p => `<span class="badge sm">${p}</span>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="intel-vulns panel" style="margin-bottom:20px;">
+                        <p><strong>Potential Vulnerabilities:</strong></p>
+                        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
+                            ${(intel.vulns || []).map(v => `<span class="badge sm danger">${v}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            shodanHtml += `<div class="raw-output-header">Raw Console Output</div><pre class="terminal-box">${scan.data.shodan.rawOutput || 'No output Data'}</pre>`;
+        }
+        const el = document.getElementById("shodan-result");
+        if (el) el.innerHTML = shodanHtml;
+    }
+
+    // Whois
+    if (scan.data.whois) {
+        let whoisHtml = '<h3>Whois Registration Data</h3>';
+        if (scan.data.whois.error) whoisHtml += `<p class="error" style="color:#ff4757;">${scan.data.whois.error}</p>`;
+        else {
+            const d = scan.data.whois.data || {};
+            whoisHtml += `<div class="panel" style="margin-bottom:15px; background:rgba(255,255,255,0.03);">
+                <p><strong>Registrar:</strong> ${d.registrar || 'N/A'}</p>
+                <p><strong>Expiry:</strong> ${d.expiry || 'N/A'}</p>
+            </div>`;
+            whoisHtml += `<div class="raw-output-header">Raw Console Output</div><pre class="terminal-box">${scan.data.whois.rawOutput || 'No output Data'}</pre>`;
+        }
+        const el = document.getElementById("whois-result");
+        if (el) el.innerHTML = whoisHtml;
+    }
+
+    // DNS
+    if (scan.data.dns) {
+        let dnsHtml = '<h3>DNS Record Analysis</h3>';
+        if (scan.data.dns.error) dnsHtml += `<p class="error" style="color:#ff4757;">${scan.data.dns.error}</p>`;
+        else {
+            const records = scan.data.dns.data?.records || {};
+            dnsHtml += `<ul class="result-list" style="margin-bottom:15px;">`;
+            if (records.A) records.A.forEach(ip => dnsHtml += `<li><span class="badge sm info">A</span> <strong>${ip}</strong></li>`);
+            if (records.MX) records.MX.forEach(mx => dnsHtml += `<li><span class="badge sm warning">MX</span> <strong>${mx}</strong></li>`);
+            dnsHtml += `</ul>`;
+            dnsHtml += `<div class="raw-output-header">Raw Console Output</div><pre class="terminal-box">${scan.data.dns.rawOutput || 'No output Data'}</pre>`;
+        }
+        const el = document.getElementById("dns-result");
+        if (el) el.innerHTML = dnsHtml;
+    }
+
+    // SSL
+    if (scan.data.ssl) {
+        let sslHtml = '<h3>SSL/TLS Certificate Analysis</h3>';
+        if (scan.data.ssl.error) sslHtml += `<p class="error" style="color:#ff4757;">${scan.data.ssl.error}</p>`;
+        else {
+            const d = scan.data.ssl.data || {};
+            sslHtml += `
+                <div class="panel" style="margin-bottom:15px; border-left:4px solid var(--success); background:rgba(255,255,255,0.03);">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-weight:700; color:var(--text-primary);">Overall Grade</span>
+                        <span class="badge success" style="font-size:18px; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center;">${d.score}</span>
+                    </div>
+                </div>
+                <div class="panel" style="margin-bottom:15px; background:rgba(255,255,255,0.03);">
+                    <p><strong>Subject:</strong> ${d.subject}</p>
+                    <p><strong>Issuer:</strong> ${d.issuer}</p>
+                    <p><strong>Expiry:</strong> ${d.valid_to}</p>
+                    <p><strong>Cipher:</strong> <code>${d.cipher}</code></p>
+                </div>
+                <div class="raw-output-header">Raw Console Output</div><pre class="terminal-box">${scan.data.ssl.rawOutput || 'No output Data'}</pre>`;
+        }
+        const el = document.getElementById("ssl-result");
+        if (el) el.innerHTML = sslHtml;
+    }
+
+    // Headers
+    if (scan.data.headers) {
+        let headHtml = '<h3>Security Header Audit</h3>';
+        if (scan.data.headers.error) headHtml += `<p class="error" style="color:#ff4757;">${scan.data.headers.error}</p>`;
+        else {
+            const items = scan.data.headers.data?.items || [];
+            headHtml += `<div style="display:grid; gap:8px; margin-bottom:15px;">`;
+            items.forEach(h => {
+                const isMissing = h.status === 'missing';
+                headHtml += `
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:rgba(255,255,255,0.03); border-radius:6px; border:1px solid ${isMissing ? 'rgba(231,76,60,0.2)' : 'rgba(46,204,113,0.2)'};">
+                        <div>
+                            <span style="font-weight:600; font-size:13px; color:var(--text-primary);">${h.name}</span>
+                            ${!isMissing ? `<div style="font-size:11px; color:var(--text-muted);">${h.value}</div>` : ''}
+                        </div>
+                        <span class="badge ${isMissing ? h.severity : 'safe'}" style="font-size:10px;">${isMissing ? 'MISSING' : 'PRESENT'}</span>
+                    </div>
+                `;
+            });
+            headHtml += `</div><div class="raw-output-header">Raw Console Output</div><pre class="terminal-box">${scan.data.headers.rawOutput || 'No output Data'}</pre>`;
+        }
+        const el = document.getElementById("headers-result");
+        if (el) el.innerHTML = headHtml;
     }
 
     // Switch to Overview
@@ -540,7 +853,7 @@ Timezone: ${d.timezone}
 
 // =================== TOOL HISTORY LOGIC ===================
 async function loadAllToolHistory() {
-    const tools = ['nmap', 'nikto', 'sqlmap', 'openvas', 'grim', 'theharvester', 'ipinfo', 'headers'];
+    const tools = ['nmap', 'nikto', 'sqlmap', 'openvas', 'grim', 'theharvester', 'ipinfo', 'headers', 'wafw00f', 'whatweb', 'sublist3r', 'dirsearch', 'sherlock', 'amass', 'httpx', 'nuclei', 'shodan'];
     tools.forEach(tool => loadToolHistory(tool));
 }
 
