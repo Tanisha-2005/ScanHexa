@@ -7,14 +7,18 @@ const execAsync = util.promisify(exec);
 
 // =================== TOOL PATHS & CONFIG ===================
 const TOOLS_BIN_DIR = path.join(__dirname, '..', 'bin');
+const IS_WINDOWS = process.platform === 'win32';
+const HOME_DIR = process.env.USERPROFILE || process.env.HOME || '';
+
 const TOOLS_CONFIG = {
-    amass: path.join(TOOLS_BIN_DIR, 'amass.exe'),
-    httpx: path.join(TOOLS_BIN_DIR, 'httpx.exe'),
-    nuclei: path.join(TOOLS_BIN_DIR, 'nuclei.exe'),
-    // Sherlock and Shodan are in UV tool paths
-    sherlock: path.join(process.env.USERPROFILE, 'AppData', 'Roaming', 'uv', 'tools', 'sherlock-project', 'Scripts', 'sherlock.exe'),
-    shodan: path.join(process.env.USERPROFILE, 'AppData', 'Roaming', 'uv', 'tools', 'shodan', 'Scripts', 'shodan.exe')
+    amass: path.join(TOOLS_BIN_DIR, IS_WINDOWS ? 'amass.exe' : 'amass'),
+    httpx: path.join(TOOLS_BIN_DIR, IS_WINDOWS ? 'httpx.exe' : 'httpx'),
+    nuclei: path.join(TOOLS_BIN_DIR, IS_WINDOWS ? 'nuclei.exe' : 'nuclei'),
+    // Sherlock and Shodan are in UV tool paths (Specific to Windows dev environment)
+    sherlock: IS_WINDOWS && HOME_DIR ? path.join(HOME_DIR, 'AppData', 'Roaming', 'uv', 'tools', 'sherlock-project', 'Scripts', 'sherlock.exe') : null,
+    shodan: IS_WINDOWS && HOME_DIR ? path.join(HOME_DIR, 'AppData', 'Roaming', 'uv', 'tools', 'shodan', 'Scripts', 'shodan.exe') : null
 };
+
 
 /**
  * Check if a tool is physically installed on the system at the configured path
@@ -27,7 +31,8 @@ async function getExecutablePath(toolName) {
 
     // 2. Check system PATH
     try {
-        await execAsync(`where ${toolName}`);
+        const checkCmd = IS_WINDOWS ? `where ${toolName}` : `which ${toolName}`;
+        await execAsync(checkCmd);
         return toolName;
     } catch {
         return null;
