@@ -333,7 +333,7 @@ ${target}.    300  IN  MX  10 aspmx.l.google.com.`
             
             if (isVulnerable) {
                 return {
-                    data: { target, protocol: proto, status: 'vulnerable', found: true, credentials: { user: 'admin', pass: 'password123' } },
+                    data: { target, protocol: proto, status: 'vulnerable', found: true, credentials: [{ user: 'admin', pass: 'password123', line: `[${proto === 'ssh' ? 22 : 80}][${proto}] host: ${target}   login: admin   password: password123` }] },
                     rawOutput: `Hydra v9.2 (c) 2021 by van Hauser/THC - Please do not use in military or secret service organizations, or for illegal purposes.
 [${proto === 'ssh' ? 22 : 80}][${proto}] host: ${target}   login: admin   password: password123
 1 of 1 target successfully completed, 1 valid password found.`
