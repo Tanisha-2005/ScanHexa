@@ -23,6 +23,7 @@ ScanHexa leverages a powerful array of industry-standard security tools:
 - **WhatWeb** – Advanced tech stack identification
 - **Sublist3r** – Domain scouting and subdomain discovery
 - **Dirsearch** – Web path and directory brute-forcing
+- **Hydra** – Login brute-force and password cracking
 
 ✨ Features
 - **Interactive Intelligence Modules**: Dynamic "About" section allowing users to explore tool capabilities with a single click.

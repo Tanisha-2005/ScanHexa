@@ -93,6 +93,9 @@ async function runScan(target, tools, options = {}) {
                     case 'shodan':
                         results[tool] = await runShodan(target, options, executable);
                         break;
+                    case 'hydra':
+                        results[tool] = await runHydra(target, options);
+                        break;
                     default:
                         // Default to simulation for tools not yet explicitly mapped to real execution
                         results[tool] = await simulateTool(tool, target, options);
@@ -324,6 +327,14 @@ ${target}.    300  IN  MX  10 aspmx.l.google.com.`
 [PRESENT] Referrer-Policy: strict-origin-when-cross-origin`
             };
         }
+        case 'hydra': {
+            return {
+                data: { target, protocol: 'ssh', status: 'vulnerable', found: true, credentials: { user: 'admin', pass: 'password123' } },
+                rawOutput: `Hydra v9.2 (c) 2021 by van Hauser/THC - Please do not use in military or secret service organizations, or for illegal purposes.
+[22][ssh] host: ${target}   login: admin   password: password123
+1 of 1 target successfully completed, 1 valid password found.`
+            };
+        }
         case 'ssl': {
             return {
                 data: {
@@ -433,6 +444,13 @@ async function runSherlock(target, options = {}, executable = 'sherlock') {
         }
         throw error;
     }
+}
+
+async function runHydra(target) {
+    // Basic SSH brute force simulation for testing
+    const command = `hydra -l admin -P common_passwords.txt ${target} ssh`;
+    const { stdout } = await execAsync(command, { timeout: 60000 });
+    return { data: stdout, rawOutput: stdout };
 }
 
 module.exports = {
