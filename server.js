@@ -14,7 +14,7 @@ const http = require('http');
 const socketIo = require('socket.io');
 
 const app = express();
-app.set('trust proxy', 1);
+app.set('trust proxy', true);
 const server = http.createServer(app);
 const io = socketIo(server, {
     cors: {
@@ -183,6 +183,7 @@ server.listen(PORT, '0.0.0.0', () => {
   ╔═══════════════════════════════════════════════╗
   ║   SCANHEXA - Cybersecurity Recon Platform     ║
   ║   Server running on http://localhost:${PORT}       ║
+  ║   Trust Proxy: ${app.get('trust proxy')}                 ║
   ║   Version: 1.0.0                             ║
   ╚═══════════════════════════════════════════════╝
   `);
