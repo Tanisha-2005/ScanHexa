@@ -2,11 +2,16 @@ const express = require("express");
 const router = express.Router();
 const dns = require("dns").promises;
 const { simulateTool } = require("../utils/scanner");
+const { isValidTarget } = require("../utils/validator");
 
 // DNS Lookup
 router.get("/dns/:domain", async(req, res) => {
     try {
         const domain = req.params.domain;
+        
+        if (!isValidTarget(domain)) {
+            return res.status(400).json({ error: "Invalid domain format" });
+        }
 
         const result = await dns.lookup(domain);
 
@@ -26,6 +31,10 @@ router.get("/dns/:domain", async(req, res) => {
 // Ping test
 router.get("/ping/:host", (req, res) => {
     const host = req.params.host;
+    
+    if (!isValidTarget(host)) {
+        return res.status(400).json({ error: "Invalid host format" });
+    }
 
     res.json({
         message: `Ping test for ${host}`,
@@ -40,6 +49,10 @@ router.post('/run', async (req, res) => {
 
         if (!tool || !domain) {
             return res.status(400).json({ error: "Tool and domain required" });
+        }
+
+        if (!isValidTarget(domain)) {
+            return res.status(400).json({ error: "Invalid domain/target format" });
         }
 
         const { runScan, getExecutablePath, simulateTool } = require("../utils/scanner");

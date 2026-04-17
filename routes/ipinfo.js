@@ -1,11 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
+const { isValidTarget } = require('../utils/validator');
 
 // IP Intelligence Lookup
 router.get('/:ip', async (req, res) => {
     try {
         const ip = req.params.ip;
+        
+        if (!isValidTarget(ip)) {
+            return res.status(400).json({ error: "Invalid IP/Target format" });
+        }
         
         // Using ipapi.co (reliable alternative)
         const response = await axios.get(`https://ipapi.co/${ip}/json/`);

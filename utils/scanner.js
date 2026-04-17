@@ -41,7 +41,7 @@ async function getExecutablePath(toolName) {
 
 // =================== CORE SCANNER LOGIC ===================
 
-async function runScan(target, tools, options = {}) {
+async function runScan(target, tools, options = {}, onProgress = null) {
     const results = {};
     const timestamp = new Date().toISOString();
 
@@ -50,57 +50,68 @@ async function runScan(target, tools, options = {}) {
             const executable = await getExecutablePath(tool);
             const forceSimulate = process.env.SCANHEXA_SIMULATE === 'true';
 
+            let toolResult;
             if (!executable || forceSimulate) {
                 if (forceSimulate) console.log(`[ScanHexa] Global simulation mode active. Simulating ${tool}.`);
                 else console.log(`[ScanHexa] Tool ${tool} not found. Falling back to high-fidelity simulation.`);
-                results[tool] = await simulateTool(tool, target, options);
+                toolResult = await simulateTool(tool, target, options);
             } else {
                 console.log(`[ScanHexa] Running REAL tool: ${tool} using ${executable}`);
                 switch (tool) {
                     case 'nmap':
-                        results[tool] = await runNmap(target, options);
+                        toolResult = await runNmap(target, options);
                         break;
                     case 'nikto':
-                        results[tool] = await runNikto(target, options);
+                        toolResult = await runNikto(target, options);
                         break;
                     case 'sublist3r':
-                        results[tool] = await runSublist3r(target, options);
+                        toolResult = await runSublist3r(target, options);
                         break;
                     case 'dirsearch':
-                        results[tool] = await runDirsearch(target, options);
+                        toolResult = await runDirsearch(target, options);
                         break;
                     case 'wafw00f':
-                        results[tool] = await runWafw00f(target, options);
+                        toolResult = await runWafw00f(target, options);
                         break;
                     case 'whatweb':
-                        results[tool] = await runWhatWeb(target, options);
+                        toolResult = await runWhatWeb(target, options);
                         break;
                     case 'headers':
-                        results[tool] = await runHeaders(target, options);
+                        toolResult = await runHeaders(target, options);
                         break;
                     case 'sherlock':
-                        results[tool] = await runSherlock(target, options, executable);
+                        toolResult = await runSherlock(target, options, executable);
                         break;
                     case 'amass':
-                        results[tool] = await runAmass(target, options, executable);
+                        toolResult = await runAmass(target, options, executable);
                         break;
                     case 'httpx':
-                        results[tool] = await runHttpx(target, options, executable);
+                        toolResult = await runHttpx(target, options, executable);
                         break;
                     case 'nuclei':
-                        results[tool] = await runNuclei(target, options, executable);
+                        toolResult = await runNuclei(target, options, executable);
                         break;
                     case 'shodan':
-                        results[tool] = await runShodan(target, options, executable);
+                        toolResult = await runShodan(target, options, executable);
                         break;
                     default:
-                        // Default to simulation for tools not yet explicitly mapped to real execution
-                        results[tool] = await simulateTool(tool, target, options);
+                        toolResult = await simulateTool(tool, target, options);
                 }
             }
+
+            results[tool] = toolResult;
+            
+            // Emit progress if callback provided
+            if (onProgress && typeof onProgress === 'function') {
+                onProgress(tool, toolResult);
+            }
+
         } catch (error) {
             console.error(`[ScanHexa] Error executing ${tool}:`, error);
             results[tool] = { error: error.message };
+            if (onProgress && typeof onProgress === 'function') {
+                onProgress(tool, { error: error.message });
+            }
         }
     }
 

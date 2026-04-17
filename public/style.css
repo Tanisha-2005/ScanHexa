@@ -197,6 +197,28 @@ body {
     letter-spacing: 2px;
 }
 
+.logout-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 51, 102, 0.3);
+    color: var(--danger);
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-left: 8px;
+}
+
+.logout-btn:hover {
+    background: rgba(255, 51, 102, 0.1);
+    border-color: var(--danger);
+    box-shadow: 0 0 10px rgba(255, 51, 102, 0.3);
+    transform: scale(1.1);
+}
+
 
 /* ======== MAIN CONTAINER ======== */
 
@@ -2338,7 +2360,7 @@ body {
 
 .about-features-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
     margin-bottom: 30px;
 }
@@ -2679,4 +2701,16 @@ body {
         grid-template-columns: 1fr;
     }
 }
-
+
+/* ======== 3D GRAPH VISUALIZATION ======== */
+.graph-panel { height: 700px; display: flex; flex-direction: column; }
+.graph-view-container { flex: 1; background: #01050a; position: relative; overflow: hidden; }
+.graph-legend { display: flex; justify-content: center; gap: 30px; padding: 15px; background: rgba(0, 0, 0, 0.4); border-top: 1px solid var(--border); }
+.l-item { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-secondary); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 1px; }
+.l-dot { width: 10px; height: 10px; border-radius: 50%; }
+.l-dot.target { background: #00ff88; box-shadow: 0 0 10px #00ff88; }
+.l-dot.host { background: #0affff; box-shadow: 0 0 10px #0affff; }
+.l-dot.port { background: #ffaa00; box-shadow: 0 0 10px #ffaa00; }
+.l-dot.vuln { background: #ff3366; box-shadow: 0 0 10px #ff3366; }
+.graph-actions { display: flex; gap: 10px; }
+#graph-view canvas { display: block; }

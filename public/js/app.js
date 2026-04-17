@@ -11,12 +11,52 @@ const State = {
     reportsCount: 0
 };
 
+// =================== AUTHENTICATION ===================
+async function logout() {
+    try {
+        console.log("Attempting logout...");
+        const response = await fetch('/api/logout');
+        if (response.ok) {
+            window.location.href = '/login.html';
+        } else {
+            console.error("Logout response not OK");
+            window.location.href = '/login.html';
+        }
+    } catch (error) {
+        console.error('Logout error:', error);
+        window.location.href = '/login.html';
+    }
+}
+
 // =================== INITIALIZATION ===================
 document.addEventListener("DOMContentLoaded", () => {
     // Initial UI Setup
     terminalLog("info", "ScanHexa initialized");
     terminalLog("ok", "Security modules ready");
     loadDashboardStats();
+
+    // Socket.io Setup
+    const socket = io();
+    socket.on("scanProgress", (progress) => {
+        console.log("[Socket] Progress Update:", progress);
+        if (State.scanInProgress && State.activeScanId) {
+            // Update Terminal
+            terminalLog("ok", `Tool ${progress.tool} completed discovery`);
+            
+            // If it's for the current target, update the live UI
+            const targetInput = document.getElementById("scan-target")?.value.trim() || document.getElementById("quick-target")?.value.trim();
+            if (progress.target === targetInput) {
+                // We don't have the full scan object yet, so we'll store partial data
+                if (!State.currentScan) {
+                    State.currentScan = { target: progress.target, data: {} };
+                }
+                State.currentScan.data[progress.tool] = progress.toolData;
+                
+                // Partially update results display
+                displayScanResults(State.currentScan, true); // Added partial flag
+            }
+        }
+    });
 
     // Event Listeners
     const targetInput = document.getElementById("scan-target");
@@ -161,7 +201,8 @@ function quickScan() {
 }
 
 // =================== UI UPDATES ===================
-function displayScanResults(scan) {
+
+function displayScanResults(scan, partial = false) {
     console.log("[ScanHexa] Displaying results for:", scan.target);
     document.getElementById("scan-placeholder").style.display = "none";
     document.getElementById("tab-overview").classList.remove("hidden");
@@ -184,7 +225,7 @@ function displayScanResults(scan) {
              nmapHtml += `</ul><div class="raw-output-header">Raw Console Output</div><pre class="terminal-box">${scan.data.nmap.rawOutput || ''}</pre>`;
         }
         document.getElementById("nmap-result").innerHTML = nmapHtml;
-    } else {
+    } else if (!partial) {
         document.getElementById("nmap-result").innerHTML = '<p class="t-warning" style="padding:20px;">Nmap was not selected to run during this scan.</p>';
     }
 
@@ -200,7 +241,7 @@ function displayScanResults(scan) {
              niktoHtml += `</ul><div class="raw-output-header">Raw Console Output</div><pre class="terminal-box">${scan.data.nikto.rawOutput || ''}</pre>`;
         }
         document.getElementById("nikto-result").innerHTML = niktoHtml;
-    } else {
+    } else if (!partial) {
         document.getElementById("nikto-result").innerHTML = '<p class="t-warning" style="padding:20px;">Nikto was not selected to run during this scan.</p>';
     }
 
@@ -569,8 +610,12 @@ function displayScanResults(scan) {
         if (el) el.innerHTML = headHtml;
     }
 
+
     // Switch to Overview
-    showResultTab('overview');
+    if (!partial) showResultTab('overview');
+    
+    // Update 3D Graph
+    update3DGraph(scan);
 }
 
 function showResultTab(tabId) {
@@ -582,6 +627,15 @@ function showResultTab(tabId) {
     
     const targetBtn = document.querySelector(`.rtab[onclick="showResultTab('${tabId}')"]`);
     if (targetBtn) targetBtn.classList.add("active");
+
+    // Fix for 3D Graph resize when tab becomes visible
+    if (tabId === 'graph' && graphInstance) {
+        const container = document.getElementById('graph-view');
+        if (container) {
+            graphInstance.width(container.offsetWidth);
+            graphInstance.height(container.offsetHeight);
+        }
+    }
 }
 
 function showSection(sectionId) {
@@ -1077,4 +1131,73 @@ function debounce(fn, delay) {
         clearTimeout(timeout);
         timeout = setTimeout(() => fn(...args), delay);
     };
+}
+
+// =================== 3D ATTACK SURFACE GRAPH ===================
+let graphInstance = null;
+
+function init3DGraph() {
+    const container = document.getElementById('graph-view');
+    if (!container) return;
+
+    graphInstance = ForceGraph3D()(container)
+        .backgroundColor('#01050a')
+        .showNavInfo(false)
+        .nodeColor(node => node.color || '#00ff88')
+        .nodeLabel(node => `<div class="graph-tooltip" style="background:#0a1628; border:1px solid #0d3060; padding:10px; border-radius:4px; font-family:monospace; color:#00ff88;">${node.label}</div>`)
+        .linkWidth(1.5)
+        .linkColor(() => 'rgba(0, 255, 136, 0.2)')
+        .linkOpacity(0.3);
+}
+
+function update3DGraph(scan) {
+    if (!scan || !scan.data) return;
+    if (!graphInstance) init3DGraph();
+
+    const nodes = [{ id: 'target', label: 'ROOT: ' + scan.target, color: '#00ff88', size: 10 }];
+    const links = [];
+
+    // 1. Add Subdomains (Amass/Sublist3r/Httpx)
+    const subdomains = new Set();
+    if (scan.data.amass?.data?.subdomains) scan.data.amass.data.subdomains.forEach(s => subdomains.add(s.domain));
+    if (scan.data.sublist3r?.data?.domains) scan.data.sublist3r.data.domains.forEach(d => subdomains.add(d));
+    if (scan.data.httpx?.data?.results) scan.data.httpx.data.results.forEach(r => subdomains.add(r.url.replace('https://', '').replace('http://', '').split('/')[0]));
+
+    subdomains.forEach(sub => {
+        nodes.push({ id: sub, label: 'SUBDOMAIN: ' + sub, color: '#0affff', size: 5 });
+        links.push({ source: 'target', target: sub });
+    });
+
+    // 2. Add Ports (Nmap)
+    if (scan.data.nmap?.data?.openPorts) {
+        scan.data.nmap.data.openPorts.forEach(p => {
+            const pId = 'port-' + p.port;
+            nodes.push({ id: pId, label: 'PORT ' + p.port + ': ' + p.service, color: '#ffaa00', size: 4 });
+            links.push({ source: 'target', target: pId });
+        });
+    }
+
+    // 3. Add Vulnerabilities (Nikto/Nuclei/OpenVAS)
+    let vulnCounter = 0;
+    if (scan.data.nikto?.data?.vulnerabilities) {
+        scan.data.nikto.data.vulnerabilities.forEach(v => {
+            const vId = 'vuln-' + (++vulnCounter);
+            nodes.push({ id: vId, label: 'VULN: ' + v.substring(0, 50) + '...', color: '#ff3366', size: 6 });
+            links.push({ source: 'target', target: vId });
+        });
+    }
+
+    if (scan.data.nuclei?.data?.findings) {
+        scan.data.nuclei.data.findings.forEach(f => {
+            const fId = 'vuln-' + (++vulnCounter);
+            nodes.push({ id: fId, label: 'NUCLEI: ' + f.name, color: '#ff3366', size: 6 });
+            links.push({ source: 'target', target: fId });
+        });
+    }
+
+    graphInstance.graphData({ nodes, links });
+}
+
+function resetGraph() {
+    if (State.currentScan) update3DGraph(State.currentScan);
 }

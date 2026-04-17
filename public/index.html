@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="./style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="//unpkg.com/3d-force-graph"></script>
 </head>
 
 <body>
@@ -44,6 +45,7 @@
         <div class="nav-status">
             <span class="status-dot online"></span>
             <span class="status-text">SYSTEM ONLINE</span>
+            <button title="Logout" class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
         </div>
     </nav>
 
@@ -491,10 +493,13 @@
                     <!-- Result Tabs -->
                     <div class="result-tabs" id="result-tabs">
                         <button class="rtab active" onclick="showResultTab('overview')">
-                            <i class="fas fa-eye"></i> Overview
+                            <i class="fas fa-th-large"></i> Overview
+                        </button>
+                        <button class="rtab" onclick="showResultTab('graph')">
+                            <i class="fas fa-project-diagram"></i> 3D Graph
                         </button>
                         <button class="rtab" onclick="showResultTab('nmap')">
-                            <i class="fas fa-network-wired"></i> Nmap
+                            <i class="fas fa-search-plus"></i> Nmap
                         </button>
                         <button class="rtab" onclick="showResultTab('nikto')">
                             <i class="fas fa-globe"></i> Nikto
@@ -562,9 +567,25 @@
                             <p>Configure your target and tools, then launch the scan to see results here</p>
                         </div>
 
-                        <!-- Overview Tab -->
-                        <div id="tab-overview" class="result-tab hidden">
-                            <div class="overview-grid" id="overview-content"></div>
+                        <div id="tab-overview" class="result-tab">
+                            <div id="overview-content" class="overview-grid"></div>
+                        </div>
+                        <div id="tab-graph" class="result-tab hidden">
+                            <div class="panel graph-panel">
+                                <div class="panel-header">
+                                    <h2><i class="fas fa-atom"></i> Attack Surface Network</h2>
+                                    <div class="graph-actions">
+                                        <button class="btn-small" onclick="resetGraph()"><i class="fas fa-sync"></i> Reset</button>
+                                    </div>
+                                </div>
+                                <div id="graph-view" class="graph-view-container"></div>
+                                <div class="graph-legend">
+                                    <span class="l-item"><span class="l-dot target"></span> Target</span>
+                                    <span class="l-item"><span class="l-dot host"></span> Subdomain</span>
+                                    <span class="l-item"><span class="l-dot port"></span> Open Port</span>
+                                    <span class="l-item"><span class="l-dot vuln"></span> Vulnerability</span>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Tool Result Tabs -->
@@ -1226,12 +1247,12 @@
                     <div class="about-brand-area">
                         <div class="hex-logo large glow"><i class="fas fa-shield-alt"></i></div>
                         <div class="brand-text-block">
-                            <h2>SCANHEXA <span class="v-tag">v2.1.0-PRO</span></h2>
-                            <p class="build-info">CORE ENGINE: NODE.JS | DATABASE: LOCAL_REPORTS | OSINT: ENABLED</p>
+                            <h2>SCANHEXA <span class="v-tag">v2.2.0-ELITE</span></h2>
+                            <p class="build-info">AUTH: BCRYPT_HASHED | INPUT: ANTI-INJECTION | SESSIONS: SECURE_ONLY</p>
                         </div>
                     </div>
                     <p class="about-description">
-                        ScanHexa is a professional-grade cybersecurity platform designed for deep network reconnaissance and automated vulnerability assessment. By unifying industry-standard security tools into a cohesive, high-performance interface, ScanHexa provides security professionals with immediate, actionable intelligence on any target.
+                        ScanHexa is an elite, high-security reconnaissance framework designed for deep network discovery and automated threat intelligence. Now featuring a Hardened Security Core with Bcrypt authentication and strict Input Sanitization, ScanHexa provides mission-critical security auditing while maintaining an impenetrable operational surface for its users.
                     </p>
                     <div class="about-stats-mini">
                         <div class="a-mini-stat">
@@ -1265,6 +1286,16 @@
                     <i class="fas fa-database f-icon" style="color:var(--warning);"></i>
                     <h3>Persistent History</h3>
                     <p>Local persistence for each tool scan. Monitor history directly within tool cards for easy audits.</p>
+                </div>
+                <div class="panel feature-card">
+                    <i class="fas fa-lock f-icon" style="color:#00ff88;"></i>
+                    <h3>Hardened Security</h3>
+                    <p>Featuring Bcrypt salted password hashing and zero-trust session management for elite operational security.</p>
+                </div>
+                <div class="panel feature-card">
+                    <i class="fas fa-user-shield f-icon" style="color:#00d9ff;"></i>
+                    <h3>Anti-Injection</h3>
+                    <p>Sophisticated target validation engine that proactively blocks command injection and shell-level attacks.</p>
                 </div>
                 <div class="panel feature-card">
                     <i class="fas fa-file-pdf f-icon" style="color:var(--danger);"></i>
@@ -1394,6 +1425,8 @@
     <!-- Notification Toast -->
     <div id="toast-container" class="toast-container"></div>
 
+    <!-- Real-time Intelligence -->
+    <script src="/socket.io/socket.io.js"></script>
     <script src="./js/app.js"></script>
 
 </body>

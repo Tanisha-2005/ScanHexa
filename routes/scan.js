@@ -57,6 +57,8 @@ function calculateRiskAssessment(scanData) {
     return { level, score };
 }
 
+const { isValidTarget } = require("../utils/validator");
+
 // Start scan
 router.post("/start", async(req, res) => {
     try {
@@ -68,6 +70,13 @@ router.post("/start", async(req, res) => {
             });
         }
 
+        if (!isValidTarget(target)) {
+            return res.status(400).json({
+                error: "Invalid target format",
+                message: "Target must be a valid IP address, domain name, or username. Shell characters are prohibited."
+            });
+        }
+
         if (!tools || tools.length === 0) {
             return res.status(400).json({
                 error: "At least one tool must be selected"
@@ -75,7 +84,17 @@ router.post("/start", async(req, res) => {
         }
 
         const combinedOptions = { ...options, profile };
-        const result = await runScan(target, tools, combinedOptions);
+        const io = req.app.get('io');
+
+        const result = await runScan(target, tools, combinedOptions, (tool, toolData) => {
+            if (io) {
+                io.emit('scanProgress', {
+                    target,
+                    tool,
+                    toolData
+                });
+            }
+        });
 
         // Calculate risk assessment based on results
         const riskAssessment = calculateRiskAssessment(result.data);
