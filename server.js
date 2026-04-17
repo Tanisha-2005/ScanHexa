@@ -71,26 +71,33 @@ app.use('/api/', limiter);
 // =================== AUTHENTICATION ===================
 app.post('/api/login', async (req, res) => {
     try {
-        const { username, password } = req.body;
+        const username = req.body.username ? req.body.username.toLowerCase().trim() : '';
+        const password = req.body.password;
+        
         const rawHash = process.env.ADMIN_PASSWORD_HASH;
         const storedHash = rawHash ? rawHash.trim() : null;
 
-        console.log(`[Auth] Attempt for user: ${username}`);
+        console.log(`[Auth-Diagnostic] Attempt for: "${username}" | Hash Length: ${storedHash ? storedHash.length : 0}`);
 
         // Verify username and check password against hash
         if (username === 'admin' && storedHash) {
+            // Check if hash looks like a valid bcrypt hash (starts with $2)
+            if (!storedHash.startsWith('$2')) {
+                console.error('[Auth-Diagnostic] ERROR: Stored hash does not appear to be a valid Bcrypt hash.');
+            }
+
             const isMatch = await bcrypt.compare(password, storedHash);
             
             if (isMatch) {
-                console.log('[Auth] Password matched for admin');
+                console.log('[Auth-Diagnostic] SUCCESS: admin authenticated');
                 req.session.authenticated = true;
                 req.session.user = { username: 'admin', role: 'administrator' };
                 return res.json({ success: true, message: 'Login successful' });
             } else {
-                console.warn('[Auth] Password mismatch for admin');
+                console.warn('[Auth-Diagnostic] FAILED: Password mismatch');
             }
         } else {
-            console.warn(`[Auth] Login failed. Username: ${username}, Hash exists: ${!!storedHash}`);
+            console.warn(`[Auth-Diagnostic] FAILED: Invalid credentials or missing hash. User match: ${username === 'admin'}`);
         }
         
         res.status(401).json({ error: 'Invalid username or password' });
