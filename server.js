@@ -72,17 +72,25 @@ app.use('/api/', limiter);
 app.post('/api/login', async (req, res) => {
     try {
         const { username, password } = req.body;
-        const storedHash = process.env.ADMIN_PASSWORD_HASH;
+        const rawHash = process.env.ADMIN_PASSWORD_HASH;
+        const storedHash = rawHash ? rawHash.trim() : null;
+
+        console.log(`[Auth] Attempt for user: ${username}`);
 
         // Verify username and check password against hash
         if (username === 'admin' && storedHash) {
             const isMatch = await bcrypt.compare(password, storedHash);
             
             if (isMatch) {
+                console.log('[Auth] Password matched for admin');
                 req.session.authenticated = true;
                 req.session.user = { username: 'admin', role: 'administrator' };
                 return res.json({ success: true, message: 'Login successful' });
+            } else {
+                console.warn('[Auth] Password mismatch for admin');
             }
+        } else {
+            console.warn(`[Auth] Login failed. Username: ${username}, Hash exists: ${!!storedHash}`);
         }
         
         res.status(401).json({ error: 'Invalid username or password' });
