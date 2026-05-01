@@ -36,13 +36,28 @@ function calculateRiskAssessment(scanData) {
         if (findings.length > 10) highCount++;
         else if (findings.length > 5) mediumCount++;
     }
-
     // theHarvester results
     if (scanData.theharvester && !scanData.theharvester.error) {
         const findings = scanData.theharvester.rawOutput || "";
         const emailMatches = findings.match(/@/g) || [];
         score += emailMatches.length * 3;
         if (emailMatches.length > 20) mediumCount++;
+    }
+
+    // ClamAV results
+    if (scanData.clamav && !scanData.clamav.error) {
+        const clamData = scanData.clamav.data || {};
+        const threats = clamData.threatsFound || [];
+        score += threats.length * 20;
+        if (threats.length > 0) criticalCount++;
+    }
+
+    // Yara results
+    if (scanData.yara && !scanData.yara.error) {
+        const yaraData = scanData.yara.data || {};
+        const matches = yaraData.matches || [];
+        score += matches.length * 10;
+        if (matches.length > 0) highCount++;
     }
 
     // Cap score at 100
@@ -104,6 +119,7 @@ router.post("/start", async(req, res) => {
             success: true,
             target,
             id: scanId,
+            user: req.session && req.session.user ? req.session.user.username : 'unknown',
             data: result.data,
             riskAssessment,
             timestamp: new Date().toISOString()

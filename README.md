@@ -1,37 +1,28 @@
-# ScanHexa v2.2.0-ELITE 🔍
+# ScanHexa v2.5.0-ELITE 🔍
 
-**The next evolution in AI-driven reconnaissance and vulnerability intelligence.**
+**A Unified Security Reconnaissance & Vulnerability Intelligence Platform.**
 
-ScanHexa is an elite, high-security cybersecurity reconnaissance framework designed for deep network discovery and automated threat intelligence. By unifying industry-standard security tools into a cohesive, high-performance interface, ScanHexa provides security professionals with immediate, actionable intelligence on any target.
+ScanHexa is a professional-grade cybersecurity tool that integrates **six core security modules** into a single, unified interface. It is designed to streamline the workflow for security researchers, providing real-time vulnerability scanning, malware detection, and deep reconnaissance.
 
-## ✨ NEW: 2.2.0-ELITE Features
-- **🌌 3D Attack Surface Graph**: Interactive Three.js-powered visualization of subdomains, ports, and vulnerabilities in a 3D force-directed network.
-- **🔒 Hardened Security Core**: Production-ready authentication using **Bcrypt salted password hashing**.
-- **🛡️ Anti-Injection Engine**: Sophisticated input validation layer that proactively blocks command injection and shell-level attacks.
-- **🔑 Zero-Trust Sessions**: Harden cookie management with `HttpOnly`, `SameSite: Strict`, and adaptive `Secure` flags.
+## 🛡️ Six Integrated Security Modules
+1. **Vulnerability Scanning**: Deep web-app audit using Nuclei, Nikto, and OpenVAS.
+2. **Malware Detection**: Integrated **ClamAV** and **Yara** for signature and rule-based threat hunting.
+3. **Real-time Analysis**: Live **Threat Intelligence Map** and active terminal monitoring of scanning progress.
+4. **Network Discovery**: Port and service enumeration via Nmap and Httpx.
+5. **OSINT & Recon**: Automated asset discovery using Amass, Shodan, and social footprinting with Sherlock.
+6. **Professional Reporting**: One-click generation of PDF/JSON audit reports for stakeholders.
 
-## 🛠 Integrated Tools
-ScanHexa leverages a powerful array of industry-standard security tools:
-- **Nmap** – Network discovery and port scanning
-- **Nikto** – Web server vulnerability scanner
-- **SQLMap** – Automated SQL Injection and database takeover
-- **OpenVAS** – Comprehensive vulnerability assessment
-- **Nuclei** – Fast, template-based vulnerability scanning
-- **Httpx** – Multi-purpose HTTP toolkit for bulk probing
-- **OWASP Amass** – In-depth asset discovery
-- **theHarvester** – OSINT email and subdomain gathering
-- **Sherlock** – Social media account forensics
-- **Shodan** – Passive reconnaissance search engine
-- **WAFW00f** – Firewall fingerprinting
-- **WhatWeb** – Tech stack identification
-- **Dirsearch** – Web path brute-forcing
+## ✨ Key Technical Highlights
+- **🌌 3D Attack Surface Mapping**: Interactive Three.js engine that visualizes target infrastructure as a dynamic network graph.
+- **🔒 Hardened Architecture**: Backend secured with Bcrypt hashing and Zero-Trust session management.
+- **🛡️ Command Injection Prevention**: Advanced validation layer utilizing strict regex sanitization for all tool inputs.
+- **📡 Real-time Synchronization**: Powered by **Socket.io** to provide millisecond-latency progress updates from scanning binaries.
 
-## 🏗 Architecture
-ScanHexa follows a modular, hardened architecture:
-- **Auth Layer**: Bcrypt-secured entry point.
-- **Validation Layer**: Strict regex-based input filtering.
-- **Engine Layer**: Parallel execution of security binaries.
-- **Visualization Layer**: 3D network graphing of findings.
+## 🏗 Modular Architecture
+ScanHexa follows a high-performance, asynchronous architecture:
+- **Core Engine**: Orchestrates the execution of multiple security binaries (C++/Go/Python) in parallel.
+- **Fidelity Layer**: Includes high-fidelity simulation fallbacks for development environments without local binaries.
+- **Intelligence Layer**: Aggregates data from diverse tools into a normalized JSON schema for cross-tool analysis.
 
 ## 📂 Project Structure
 ```text

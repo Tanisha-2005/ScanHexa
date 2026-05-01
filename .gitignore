@@ -6,3 +6,9 @@ logs/
 package-lock.json
 output.json
 scratch/
+data/users.json
+data/tool_history/*.json
+blinlit.txt
+google.txt
+scratch_test.js
+bin/

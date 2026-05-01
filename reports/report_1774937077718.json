@@ -75,5 +75,6 @@
     "level": "critical",
     "score": 89
   },
-  "timestamp": "2026-03-31T06:04:37.718Z"
+  "timestamp": "2026-03-31T06:04:37.718Z",
+  "user": "admin"
 }

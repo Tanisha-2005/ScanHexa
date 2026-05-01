@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ScanHexa - Secure Login</title>
+    <title>ScanHexa - Secure Access</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -17,6 +17,7 @@
             --text-dim: #94a3b8;
             --accent: #10b981;
             --error: #ef4444;
+            --warning: #f59e0b;
         }
 
         * {
@@ -29,11 +30,11 @@
         body {
             background-color: var(--bg-dark);
             color: var(--text-main);
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
+            overflow-x: hidden;
             position: relative;
         }
 
@@ -66,7 +67,7 @@
 
         .login-container {
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             padding: 2.5rem;
             background: var(--card-bg);
             backdrop-filter: blur(16px);
@@ -75,6 +76,7 @@
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             z-index: 10;
             animation: fadeIn 0.8s ease-out;
+            margin: 2rem;
         }
 
         @keyframes fadeIn {
@@ -84,7 +86,7 @@
 
         .header {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
 
         .logo {
@@ -104,8 +106,51 @@
             text-transform: uppercase;
         }
 
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 0.5rem;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 0.5rem;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab.active {
+            color: var(--primary);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.2rem;
         }
 
         label {
@@ -138,7 +183,7 @@
             background: rgba(15, 23, 42, 0.8);
         }
 
-        button {
+        button.action-btn {
             width: 100%;
             padding: 1rem;
             background: var(--primary);
@@ -153,13 +198,13 @@
             box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
         }
 
-        button:hover {
+        button.action-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
             filter: brightness(1.1);
         }
 
-        button:active {
+        button.action-btn:active {
             transform: translateY(0);
         }
 
@@ -175,11 +220,32 @@
             border: 1px solid rgba(239, 68, 68, 0.2);
         }
 
-        .footer-note {
-            margin-top: 2rem;
+        .success-message {
+            color: var(--accent);
+            font-size: 0.85rem;
+            margin-top: 1rem;
             text-align: center;
+            display: none;
+            padding: 0.5rem;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .footer-links {
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        .footer-links a {
             color: var(--text-dim);
-            font-size: 0.8rem;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
         }
 
         .loading-dots::after {
@@ -203,80 +269,128 @@
             <div class="subtitle">Secure Recon Intelligence</div>
         </div>
 
-        <form id="loginForm">
+        <div class="tabs">
+            <div class="tab active" data-target="login">Login</div>
+            <div class="tab" data-target="register">Register</div>
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm" class="form-section active">
             <div class="form-group">
-                <label for="username">Username</label>
-                <div class="input-wrapper">
-                    <input type="text" id="username" name="username" placeholder="Enter admin username" required autocomplete="username">
-                </div>
+                <label for="loginUsername">Username</label>
+                <input type="text" id="loginUsername" required autocomplete="username">
             </div>
 
             <div class="form-group">
-                <label for="password">Password</label>
-                <div class="input-wrapper">
-                    <input type="password" id="password" name="password" placeholder="••••••••" required autocomplete="current-password">
-                </div>
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" required autocomplete="current-password">
             </div>
 
-            <div id="errorMessage" class="error-message">Invalid credentials. Please try again.</div>
-
-            <button type="submit" id="loginBtn">Authenticate</button>
+            <div id="loginError" class="error-message"></div>
+            
+            <button type="submit" class="action-btn" id="loginBtn">Authenticate</button>
+            
+            <div class="footer-links">
+                <a href="#" id="showForgotPwd">Forgot Password?</a>
+            </div>
         </form>
 
-        <div class="footer-note">
-            Standard Administrative Access Required
-        </div>
+        <!-- Register Form -->
+        <form id="registerForm" class="form-section">
+            <div class="form-group">
+                <label for="regUsername">Username</label>
+                <input type="text" id="regUsername" required autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <label for="regContact">Email or Mobile Number</label>
+                <input type="text" id="regContact" required placeholder="For password recovery">
+            </div>
+
+            <div class="form-group">
+                <label for="regPassword">Password</label>
+                <input type="password" id="regPassword" required autocomplete="new-password">
+            </div>
+
+            <div id="regError" class="error-message"></div>
+            <div id="regSuccess" class="success-message"></div>
+
+            <button type="submit" class="action-btn" id="regBtn">Create Account</button>
+        </form>
+
+        <!-- Forgot Password Form -->
+        <form id="forgotForm" class="form-section">
+            <div class="form-group">
+                <label for="forgotUsername">Username</label>
+                <input type="text" id="forgotUsername" required>
+            </div>
+
+            <div class="form-group">
+                <label for="forgotContact">Registered Email or Mobile Number</label>
+                <input type="text" id="forgotContact" required>
+            </div>
+
+            <div class="form-group">
+                <label for="newPassword">New Password</label>
+                <input type="password" id="newPassword" required>
+            </div>
+
+            <div id="forgotError" class="error-message"></div>
+            <div id="forgotSuccess" class="success-message"></div>
+
+            <button type="submit" class="action-btn" id="forgotBtn">Reset Password</button>
+            
+            <div class="footer-links">
+                <a href="#" id="backToLogin">Back to Login</a>
+            </div>
+        </form>
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const btn = document.getElementById('loginBtn');
-            const errorMsg = document.getElementById('errorMessage');
+        // Tab switching
+        const tabs = document.querySelectorAll('.tab');
+        const sections = {
+            'login': document.getElementById('loginForm'),
+            'register': document.getElementById('registerForm'),
+            'forgot': document.getElementById('forgotForm')
+        };
 
-            // Reset UI
-            errorMsg.style.display = 'none';
-            btn.disabled = true;
-            btn.innerHTML = 'Authenticating<span class="loading-dots"></span>';
-
-            try {
-                const response = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ username, password })
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    btn.style.background = 'var(--accent)';
-                    btn.innerHTML = 'Access Granted';
-                    setTimeout(() => {
-                        window.location.href = '/';
-                    }, 800);
-                } else {
-                    throw new Error(data.error || 'Authentication failed');
-                }
-            } catch (error) {
-                console.error('Login error:', error);
-                errorMsg.textContent = error.message;
-                errorMsg.style.display = 'block';
-                btn.disabled = false;
-                btn.innerHTML = 'Authenticate';
-                
-                // Shake effect
-                const container = document.querySelector('.login-container');
-                container.style.animation = 'none';
-                void container.offsetWidth; // trigger reflow
-                container.style.animation = 'shake 0.5s ease-in-out';
+        function showSection(target) {
+            Object.values(sections).forEach(sec => sec.classList.remove('active'));
+            if(sections[target]) sections[target].classList.add('active');
+            
+            if(target === 'login' || target === 'register') {
+                tabs.forEach(t => t.classList.remove('active'));
+                document.querySelector(`.tab[data-target="${target}"]`).classList.add('active');
+                document.querySelector('.tabs').style.display = 'flex';
+            } else {
+                document.querySelector('.tabs').style.display = 'none';
             }
+        }
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => showSection(tab.dataset.target));
         });
 
-        // Add shake animation
+        document.getElementById('showForgotPwd').addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection('forgot');
+        });
+
+        document.getElementById('backToLogin').addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection('login');
+        });
+
+        // Helper for shaking animation
+        function shakeContainer() {
+            const container = document.querySelector('.login-container');
+            container.style.animation = 'none';
+            void container.offsetWidth; // trigger reflow
+            container.style.animation = 'shake 0.5s ease-in-out';
+        }
+
+        // Add shake animation styles
         const style = document.createElement('style');
         style.innerHTML = `
             @keyframes shake {
@@ -287,6 +401,128 @@
             }
         `;
         document.head.appendChild(style);
+
+        // Login Handler
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            const btn = document.getElementById('loginBtn');
+            const errorMsg = document.getElementById('loginError');
+
+            errorMsg.style.display = 'none';
+            btn.disabled = true;
+            btn.innerHTML = 'Authenticating<span class="loading-dots"></span>';
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    btn.style.background = 'var(--accent)';
+                    btn.innerHTML = 'Access Granted';
+                    // Save role in localStorage for basic UI toggles
+                    localStorage.setItem('userRole', data.role);
+                    setTimeout(() => { window.location.href = '/'; }, 800);
+                } else {
+                    throw new Error(data.error || 'Authentication failed');
+                }
+            } catch (error) {
+                errorMsg.textContent = error.message;
+                errorMsg.style.display = 'block';
+                btn.disabled = false;
+                btn.innerHTML = 'Authenticate';
+                shakeContainer();
+            }
+        });
+
+        // Register Handler
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('regUsername').value;
+            const contact = document.getElementById('regContact').value;
+            const password = document.getElementById('regPassword').value;
+            const btn = document.getElementById('regBtn');
+            const errorMsg = document.getElementById('regError');
+            const successMsg = document.getElementById('regSuccess');
+
+            errorMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+            btn.disabled = true;
+            btn.innerHTML = 'Creating<span class="loading-dots"></span>';
+
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, contact, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    successMsg.textContent = 'Registration successful! Please login.';
+                    successMsg.style.display = 'block';
+                    document.getElementById('registerForm').reset();
+                } else {
+                    throw new Error(data.error || 'Registration failed');
+                }
+            } catch (error) {
+                errorMsg.textContent = error.message;
+                errorMsg.style.display = 'block';
+                shakeContainer();
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Create Account';
+            }
+        });
+
+        // Forgot Password Handler
+        document.getElementById('forgotForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('forgotUsername').value;
+            const contact = document.getElementById('forgotContact').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const btn = document.getElementById('forgotBtn');
+            const errorMsg = document.getElementById('forgotError');
+            const successMsg = document.getElementById('forgotSuccess');
+
+            errorMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+            btn.disabled = true;
+            btn.innerHTML = 'Resetting<span class="loading-dots"></span>';
+
+            try {
+                const response = await fetch('/api/forgot-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, contact, newPassword })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    successMsg.textContent = 'Password reset successful! You can now login.';
+                    successMsg.style.display = 'block';
+                    document.getElementById('forgotForm').reset();
+                    setTimeout(() => showSection('login'), 2000);
+                } else {
+                    throw new Error(data.error || 'Reset failed');
+                }
+            } catch (error) {
+                errorMsg.textContent = error.message;
+                errorMsg.style.display = 'block';
+                shakeContainer();
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Reset Password';
+            }
+        });
     </script>
 </body>
 </html>

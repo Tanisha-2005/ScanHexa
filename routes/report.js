@@ -15,11 +15,18 @@ router.get('/list', (req, res) => {
 
         const files = fs.readdirSync(reportsDir).filter(f => f.startsWith('report_') && f.endsWith('.json'));
 
+        const userRole = req.session && req.session.user ? req.session.user.role : 'user';
+        const username = req.session && req.session.user ? req.session.user.username : 'unknown';
+
         const reports = files.map(file => {
             try {
                 const filePath = path.join(reportsDir, file);
                 const data = fs.readFileSync(filePath, 'utf8');
                 const parsed = JSON.parse(data);
+                
+                if (userRole !== 'admin' && userRole !== 'administrator' && parsed.user !== username) {
+                    return null;
+                }
                 
                 // Return a summary of the report to the list
                 return {
@@ -27,7 +34,8 @@ router.get('/list', (req, res) => {
                     target: parsed.target || 'Unknown',
                     timestamp: parsed.timestamp || new Date().toISOString(),
                     riskAssessment: parsed.riskAssessment || { level: 'low', score: 0 },
-                    success: parsed.success !== undefined ? parsed.success : true
+                    success: parsed.success !== undefined ? parsed.success : true,
+                    user: parsed.user || 'unknown'
                 };
             } catch (e) {
                 console.error(`Error reading report file ${file}:`, e);
@@ -52,14 +60,25 @@ router.get('/stats', (req, res) => {
 
         const files = fs.readdirSync(reportsDir).filter(f => f.startsWith('report_') && f.endsWith('.json'));
         
-        let totalScans = files.length;
+        let totalScans = 0;
         let criticalVulns = 0;
         let openPorts = 0;
-        let reportsCount = files.length;
+        let reportsCount = 0;
+
+        const userRole = req.session && req.session.user ? req.session.user.role : 'user';
+        const username = req.session && req.session.user ? req.session.user.username : 'unknown';
 
         files.forEach(file => {
             try {
                 const data = JSON.parse(fs.readFileSync(path.join(reportsDir, file), 'utf8'));
+                
+                if (userRole !== 'admin' && userRole !== 'administrator' && data.user !== username) {
+                    return;
+                }
+
+                totalScans++;
+                reportsCount++;
+
                 const level = (data.riskAssessment?.level || '').toLowerCase();
                 if (level === 'critical') {
                     criticalVulns++;
@@ -86,7 +105,16 @@ router.get('/:id', (req, res) => {
 
         if (fs.existsSync(filePath)) {
             const data = fs.readFileSync(filePath, 'utf8');
-            res.json(JSON.parse(data));
+            const parsed = JSON.parse(data);
+            
+            const userRole = req.session && req.session.user ? req.session.user.role : 'user';
+            const username = req.session && req.session.user ? req.session.user.username : 'unknown';
+
+            if (userRole !== 'admin' && userRole !== 'administrator' && parsed.user !== username) {
+                return res.status(403).json({ error: "Access denied" });
+            }
+
+            res.json(parsed);
         } else {
             res.status(404).json({ error: "Report not found" });
         }
@@ -102,6 +130,16 @@ router.delete('/:id', (req, res) => {
         const filePath = path.join(getReportsDir(), `report_${id}.json`);
 
         if (fs.existsSync(filePath)) {
+            const data = fs.readFileSync(filePath, 'utf8');
+            const parsed = JSON.parse(data);
+            
+            const userRole = req.session && req.session.user ? req.session.user.role : 'user';
+            const username = req.session && req.session.user ? req.session.user.username : 'unknown';
+
+            if (userRole !== 'admin' && userRole !== 'administrator' && parsed.user !== username) {
+                return res.status(403).json({ error: "Access denied" });
+            }
+
             fs.unlinkSync(filePath);
             res.json({ success: true, message: "Report deleted successfully" });
         } else {

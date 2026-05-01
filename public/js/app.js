@@ -76,6 +76,38 @@ document.addEventListener("DOMContentLoaded", () => {
     loadDashboardStats();
     loadAllToolHistory();
 
+    // Enforce Role-Based Access Control on UI
+    const userRole = localStorage.getItem('userRole');
+    if (userRole === 'user') {
+        terminalLog('warning', 'Logged in as Regular User. Some aggressive tools are disabled.');
+        // Disable aggressive quick scans
+        const qNmap = document.getElementById("q-nmap");
+        if (qNmap) {
+            qNmap.disabled = true;
+            qNmap.checked = false;
+            qNmap.parentElement.style.opacity = '0.5';
+            qNmap.parentElement.title = 'Requires Admin privileges';
+        }
+        
+        // Disable advanced aggressive options
+        const aggroOpt = document.getElementById("aggressive");
+        if (aggroOpt) {
+            aggroOpt.disabled = true;
+            aggroOpt.checked = false;
+            aggroOpt.parentElement.style.opacity = '0.5';
+        }
+
+        // Hide Tools tab as it contains direct tool execution
+        const toolsNav = document.querySelector('a[href="#tools"]');
+        if (toolsNav) toolsNav.style.display = 'none';
+
+        // Hide admin only UI elements
+        document.querySelectorAll('.admin-only-ui').forEach(el => el.style.display = 'none');
+    } else {
+        terminalLog('ok', 'Logged in as Administrator. Full system access granted.');
+        loadUsers(); // load users for admin
+    }
+
     // Handle initial hash routing
     const hash = window.location.hash.substring(1);
     if (hash && document.getElementById(hash)) {
@@ -722,7 +754,8 @@ function renderReports(reportsList) {
         card.className = "report-card panel";
         card.innerHTML = `
             <h3>Target: ${r.target}</h3>
-            <p>Date: ${new Date(r.timestamp).toLocaleString()}</p>
+            <p style="font-size: 13px; color: var(--text-secondary);">Date: ${new Date(r.timestamp).toLocaleString()}</p>
+            <p style="font-size: 13px; color: var(--primary);">Scanned by: <strong>${r.user || 'unknown'}</strong></p>
             <div style="margin-top:10px;">
                 <span class="badge ${r.riskAssessment?.level || 'low'}" style="padding:4px 8px; border-radius:4px; font-weight:bold; background:rgba(255,255,255,0.1);">${(r.riskAssessment?.level || 'Low').toUpperCase()} RISK</span>
                 <span style="margin-left:8px;">Score: ${r.riskAssessment?.score || 0}</span>
@@ -1196,6 +1229,92 @@ function update3DGraph(scan) {
     }
 
     graphInstance.graphData({ nodes, links });
+}
+
+// =================== USER MANAGEMENT ===================
+async function loadUsers() {
+    try {
+        const res = await fetch("/api/users");
+        if (!res.ok) throw new Error("Failed to fetch users");
+        const data = await res.json();
+        
+        const tbody = document.getElementById("users-table-body");
+        if (!tbody) return;
+
+        if (!data.users || data.users.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 20px;">No users found.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = "";
+        data.users.forEach(user => {
+            const tr = document.createElement("tr");
+            tr.style.borderBottom = "1px solid rgba(255,255,255,0.05)";
+            
+            const roleBadge = user.role === 'admin' 
+                ? '<span class="badge danger">ADMIN</span>' 
+                : '<span class="badge info">USER</span>';
+
+            const statusBadge = user.blocked 
+                ? '<span class="badge warning" style="margin-left: 5px;">BLOCKED</span>' 
+                : '';
+
+            const actionBtns = user.role === 'admin' ? '<span style="opacity:0.5; font-size:12px;">Master Admin</span>' : `
+                <button class="cyber-btn sm ${user.blocked ? 'success' : 'warning'}" onclick="toggleBlockUser('${user.username}')" title="${user.blocked ? 'Unblock' : 'Block'}">
+                    <i class="fas fa-${user.blocked ? 'unlock' : 'ban'}"></i>
+                </button>
+                <button class="cyber-btn sm danger" onclick="deleteUser('${user.username}')" title="Delete">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+
+            tr.innerHTML = `
+                <td style="padding: 12px; font-weight: 600;">${user.username} ${statusBadge}</td>
+                <td style="padding: 12px;">${roleBadge}</td>
+                <td style="padding: 12px;">${user.contact || 'N/A'}</td>
+                <td style="padding: 12px; display: flex; gap: 8px;">
+                    ${actionBtns}
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    } catch(e) {
+        console.error("Error loading users:", e);
+        const tbody = document.getElementById("users-table-body");
+        if (tbody) tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 20px; color: var(--error);">Error loading users.</td></tr>`;
+    }
+}
+
+async function toggleBlockUser(username) {
+    if(!confirm(`Are you sure you want to toggle block status for ${username}?`)) return;
+    try {
+        const res = await fetch(`/api/users/${username}/toggle-block`, { method: 'POST' });
+        const data = await res.json();
+        if (res.ok) {
+            showToast(data.message, "success");
+            loadUsers();
+        } else {
+            showToast(data.error || "Failed to block/unblock user", "error");
+        }
+    } catch(e) {
+        showToast("Error processing request", "error");
+    }
+}
+
+async function deleteUser(username) {
+    if(!confirm(`WARNING: Are you sure you want to PERMANENTLY DELETE user ${username}?`)) return;
+    try {
+        const res = await fetch(`/api/users/${username}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (res.ok) {
+            showToast("User deleted successfully", "success");
+            loadUsers();
+        } else {
+            showToast(data.error || "Failed to delete user", "error");
+        }
+    } catch(e) {
+        showToast("Error deleting user", "error");
+    }
 }
 
 function resetGraph() {

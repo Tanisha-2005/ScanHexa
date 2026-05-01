@@ -41,6 +41,9 @@
             <a href="#about" class="nav-link" onclick="showSection('about')">
                 <i class="fas fa-info-circle"></i> About
             </a>
+            <a href="#users" class="nav-link admin-only-ui" onclick="showSection('users')">
+                <i class="fas fa-users"></i> Users
+            </a>
         </div>
         <div class="nav-status">
             <span class="status-dot online"></span>
@@ -700,6 +703,38 @@
                     <button class="cyber-btn primary" onclick="showSection('scanner')">
                         <i class="fas fa-play"></i> Start Scanning
                     </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================== USERS MANAGEMENT SECTION =================== -->
+        <section id="users" class="section admin-only-ui">
+            <div class="section-header">
+                <h1 class="section-title"><i class="fas fa-users"></i> User Management</h1>
+                <p class="section-subtitle">Administrator control panel for platform access</p>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>Registered Accounts</h2>
+                    <button class="cyber-btn primary sm" onclick="loadUsers()"><i class="fas fa-sync"></i> Refresh</button>
+                </div>
+                <div class="table-container" style="overflow-x: auto; margin-top: 15px;">
+                    <table class="cyber-table" style="width: 100%; text-align: left; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: var(--primary);">
+                                <th style="padding: 12px;">Username</th>
+                                <th style="padding: 12px;">Role</th>
+                                <th style="padding: 12px;">Contact Info</th>
+                                <th style="padding: 12px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body">
+                            <tr>
+                                <td colspan="4" style="text-align: center; padding: 20px;">Loading users...</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </section>
