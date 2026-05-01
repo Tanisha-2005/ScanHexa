@@ -73,10 +73,7 @@ app.use('/api/', limiter);
 
 // =================== DATABASE CONNECTION ===================
 const mongoURI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/scanhexa';
-mongoose.connect(mongoURI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}).then(async () => {
+mongoose.connect(mongoURI).then(async () => {
     console.log('[MongoDB] Connected successfully');
     
     // Auto-generate default admin if no users exist
