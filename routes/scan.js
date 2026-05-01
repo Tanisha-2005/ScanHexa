@@ -3,6 +3,7 @@ const router = express.Router();
 const fs = require('fs');
 const path = require('path');
 const { runScan } = require("../utils/scanner");
+const Report = require('../models/Report');
 
 function calculateRiskAssessment(scanData) {
     let score = 0;
@@ -125,15 +126,18 @@ router.post("/start", async(req, res) => {
             timestamp: new Date().toISOString()
         };
 
-        // Save report to disk
+        // Save report to MongoDB
         try {
-            const reportsDir = path.join(__dirname, '..', 'reports');
-            if (!fs.existsSync(reportsDir)) {
-                fs.mkdirSync(reportsDir, { recursive: true });
-            }
-            fs.writeFileSync(path.join(reportsDir, `report_${scanId}.json`), JSON.stringify(responseData, null, 2));
+            await Report.create({
+                scanId,
+                target,
+                user: responseData.user,
+                data: result.data,
+                riskAssessment,
+                success: true
+            });
         } catch (saveError) {
-            console.error("Failed to save report:", saveError);
+            console.error("Failed to save report to MongoDB:", saveError);
         }
 
         res.json(responseData);

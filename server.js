@@ -9,6 +9,9 @@ const rateLimit = require('express-rate-limit');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcryptjs');
+const mongoose = require('mongoose');
+
+const User = require('./models/User');
 
 const http = require('http');
 const socketIo = require('socket.io');
@@ -68,43 +71,30 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// =================== USER MANAGEMENT ===================
-const usersFilePath = path.join(__dirname, 'data', 'users.json');
-
-// Helper to read users
-const getUsers = () => {
-    try {
-        if (!fs.existsSync(usersFilePath)) {
-            // Generate default admin if not exists (especially for fresh Render deployments)
-            const defaultAdmin = [{
-                username: "admin",
-                passwordHash: "$2b$10$uVdX.H25VwOXI24/WeuMUeSLrdEShcRRA3x8YHbvwpYIPounJZNR2", // Hash for @helloadmin123
-                role: "admin",
-                contact: "admin@scanhexa.com"
-            }];
-            const dir = path.dirname(usersFilePath);
-            if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-            fs.writeFileSync(usersFilePath, JSON.stringify(defaultAdmin, null, 2));
-            return defaultAdmin;
-        }
-        const data = fs.readFileSync(usersFilePath, 'utf8');
-        return JSON.parse(data);
-    } catch (err) {
-        console.error('Error reading users.json:', err);
-        return [];
+// =================== DATABASE CONNECTION ===================
+const mongoURI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/scanhexa';
+mongoose.connect(mongoURI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}).then(async () => {
+    console.log('[MongoDB] Connected successfully');
+    
+    // Auto-generate default admin if no users exist
+    const adminExists = await User.findOne({ username: 'admin' });
+    if (!adminExists) {
+        const passwordHash = await bcrypt.hash('helloadmin123', 10);
+        await User.create({
+            username: 'admin',
+            passwordHash,
+            role: 'admin',
+            contact: 'admin@scanhexa.com'
+        });
+        console.log('[MongoDB] Default admin user created.');
     }
-};
+}).catch(err => {
+    console.error('[MongoDB] Connection error:', err);
+});
 
-// Helper to save users
-const saveUsers = (users) => {
-    try {
-        const dir = path.dirname(usersFilePath);
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-        fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
-    } catch (err) {
-        console.error('Error writing users.json:', err);
-    }
-};
 
 // =================== AUTHENTICATION ===================
 app.post('/api/login', async (req, res) => {
@@ -112,8 +102,7 @@ app.post('/api/login', async (req, res) => {
         const username = req.body.username ? req.body.username.toLowerCase().trim() : '';
         const password = req.body.password;
         
-        const users = getUsers();
-        const user = users.find(u => u.username === username);
+        const user = await User.findOne({ username });
 
         if (user) {
             if (user.blocked) {
@@ -148,22 +137,22 @@ app.post('/api/register', async (req, res) => {
         }
 
         const normalizedUsername = username.toLowerCase().trim();
-        const users = getUsers();
+        const existingUser = await User.findOne({ username: normalizedUsername });
         
-        if (users.find(u => u.username === normalizedUsername)) {
+        if (existingUser) {
             return res.status(400).json({ error: 'Username already exists' });
         }
 
         const passwordHash = await bcrypt.hash(password, 10);
         
-        users.push({
+        const user = new User({
             username: normalizedUsername,
             passwordHash,
             role: 'user', // Default role is user
             contact: contact.trim()
         });
         
-        saveUsers(users);
+        await user.save();
         res.json({ success: true, message: 'Registration successful' });
     } catch (error) {
         console.error('Registration error:', error);
@@ -179,13 +168,12 @@ app.post('/api/forgot-password', async (req, res) => {
         }
 
         const normalizedUsername = username.toLowerCase().trim();
-        const users = getUsers();
-        const userIndex = users.findIndex(u => u.username === normalizedUsername && u.contact === contact);
+        const user = await User.findOne({ username: normalizedUsername, contact });
 
-        if (userIndex !== -1) {
+        if (user) {
             const passwordHash = await bcrypt.hash(newPassword, 10);
-            users[userIndex].passwordHash = passwordHash;
-            saveUsers(users);
+            user.passwordHash = passwordHash;
+            await user.save();
             return res.json({ success: true, message: 'Password updated successfully' });
         } else {
             return res.status(404).json({ error: 'User details not found or contact info mismatch' });
@@ -196,54 +184,55 @@ app.post('/api/forgot-password', async (req, res) => {
     }
 });
 
-app.get('/api/users', (req, res) => {
+app.get('/api/users', async (req, res) => {
     if (req.session.authenticated && req.session.user && (req.session.user.role === 'admin' || req.session.user.role === 'administrator')) {
-        const users = getUsers().map(u => ({
-            username: u.username,
-            role: u.role,
-            contact: u.contact,
-            blocked: u.blocked || false
-        }));
-        res.json({ success: true, users });
+        try {
+            const allUsers = await User.find({}, 'username role contact blocked');
+            res.json({ success: true, users: allUsers });
+        } catch (error) {
+            res.status(500).json({ error: 'Failed to fetch users' });
+        }
     } else {
         res.status(403).json({ error: 'Access denied. Administrator privileges required.' });
     }
 });
 
-app.delete('/api/users/:username', (req, res) => {
+app.delete('/api/users/:username', async (req, res) => {
     if (req.session.authenticated && req.session.user && (req.session.user.role === 'admin' || req.session.user.role === 'administrator')) {
         const usernameToDelete = req.params.username;
         if (usernameToDelete === 'admin') return res.status(400).json({ error: 'Cannot delete the master admin.' });
         
-        let users = getUsers();
-        const initialLength = users.length;
-        users = users.filter(u => u.username !== usernameToDelete);
-        
-        if (users.length < initialLength) {
-            saveUsers(users);
-            res.json({ success: true, message: 'User deleted successfully' });
-        } else {
-            res.status(404).json({ error: 'User not found' });
+        try {
+            const result = await User.deleteOne({ username: usernameToDelete });
+            if (result.deletedCount > 0) {
+                res.json({ success: true, message: 'User deleted successfully' });
+            } else {
+                res.status(404).json({ error: 'User not found' });
+            }
+        } catch (error) {
+            res.status(500).json({ error: 'Failed to delete user' });
         }
     } else {
         res.status(403).json({ error: 'Access denied' });
     }
 });
 
-app.post('/api/users/:username/toggle-block', (req, res) => {
+app.post('/api/users/:username/toggle-block', async (req, res) => {
     if (req.session.authenticated && req.session.user && (req.session.user.role === 'admin' || req.session.user.role === 'administrator')) {
         const usernameToBlock = req.params.username;
         if (usernameToBlock === 'admin') return res.status(400).json({ error: 'Cannot block the master admin.' });
         
-        let users = getUsers();
-        const user = users.find(u => u.username === usernameToBlock);
-        
-        if (user) {
-            user.blocked = !user.blocked;
-            saveUsers(users);
-            res.json({ success: true, blocked: user.blocked, message: `User ${user.blocked ? 'blocked' : 'unblocked'}` });
-        } else {
-            res.status(404).json({ error: 'User not found' });
+        try {
+            const user = await User.findOne({ username: usernameToBlock });
+            if (user) {
+                user.blocked = !user.blocked;
+                await user.save();
+                res.json({ success: true, blocked: user.blocked, message: `User ${user.blocked ? 'blocked' : 'unblocked'}` });
+            } else {
+                res.status(404).json({ error: 'User not found' });
+            }
+        } catch (error) {
+            res.status(500).json({ error: 'Failed to block user' });
         }
     } else {
         res.status(403).json({ error: 'Access denied' });
